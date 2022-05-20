@@ -1,63 +1,62 @@
 import processing.core.PApplet;
 
-public class Weapon extends GameObject{
-       public Weapon(int width, int height, int x, int y, int speed) {
-              super(width, height, x, y, speed);
-       }
+public class Weapon extends GameObject {
 
- 
-       @Override
-       public void move(int xMove, int yMove) {
-              setX(getX() + xMove);
-              setY(getY() + yMove);           
-       }
+	public Weapon(int width, int height, int x, int y, int speed) {
 
-       @Override
-       public boolean collide(GameObject g) {
-              //Check if the Weapon hitbox collides with a player hitbox
+		super(width, height, x, y, speed);
 
-              //X and Y coordinates are the center of the image/hitbox rectangle
+	}
 
-              Character c = new Character(0, 0, 0, 0, 0);
+	@Override
+	public void move(int xMove, int yMove) {
 
-              if(g.getClass() != c.getClass()) //Ensure Weapon hits a player
+		setX(getX() + xMove);
 
-                     return false;
+		setY(getY() + yMove);
 
-              else {
+	}
 
-                     if((this.getX() + this.getWidth()/2 >= g.getX() - g.getWidth()/2) &&
+	@Override
+	public boolean collide(GameObject g) {
 
-                                  (this.getY() + this.getHeight()/2 >= g.getY() - g.getHeight()/2) &&
+		// Check if the Weapon hitbox collides with a player hitbox
 
-                                  (this.getY() - this.getHeight()/2 <= g.getY() + g.getHeight())) {
+		// X and Y coordinates are the center of the image/hitbox rectangle
 
-                           return true;
+		Character c = new Character(0, 0, 0, 0, 0);
 
-                     }
+		if (g.getClass() != c.getClass()) // Ensure Weapon hits a player
 
-                     else {
+			return false;
 
-                           return false;
+		else {
 
-                     }
+			if ((this.getX() + this.getWidth() / 2 >= g.getX() - g.getWidth() / 2) &&
 
-              }
+					(this.getY() + this.getHeight() / 2 >= g.getY() - g.getHeight() / 2) &&
 
-       }
+					(this.getY() - this.getHeight() / 2 <= g.getY() + g.getHeight())) {
 
- 
+				return true;
 
-       @Override
+			}
 
-       public void draw(PApplet p) {
+			else {
 
-              // TODO Auto-generated method stub
+				return false;
 
-             
+			}
 
-       }
+		}
 
- 
+	}
+
+	@Override
+	public void draw(PApplet p) {
+
+		// TODO Auto-generated method stub
+
+	}
 
 }
