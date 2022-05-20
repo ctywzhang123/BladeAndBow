@@ -1,35 +1,19 @@
 import processing.core.PApplet;
 
- 
-
 public class Weapon extends GameObject{
-
- 
-
        public Weapon(int width, int height, int x, int y, int speed) {
-
               super(width, height, x, y, speed);
-
        }
 
  
-
        @Override
-
        public void move(int xMove, int yMove) {
-
               setX(getX() + xMove);
-
               setY(getY() + yMove);           
-
        }
 
- 
-
        @Override
-
        public boolean collide(GameObject g) {
-
               //Check if the Weapon hitbox collides with a player hitbox
 
               //X and Y coordinates are the center of the image/hitbox rectangle
