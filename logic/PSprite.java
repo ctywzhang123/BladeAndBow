@@ -17,7 +17,7 @@ public class PSprite extends GameObject { // FIX!!!
 	 * @param y     - y-coordinate
 	 * @param speed - move speed
 	 */
-	public PSprite(File img, int w, int h, int x, int y) { // CHANGE PImage PARAMETER TO FILE PARAMETER!!!
+	public PSprite(File img, int w, int h, int x, int y) {
 		super(w, h, x, y, 1);
 		this.img = img;
 		this.x = x;
@@ -29,6 +29,10 @@ public class PSprite extends GameObject { // FIX!!!
 	public File getImg() {
 		return img;
 	}
+	
+	public void printFileName() {
+		System.out.println(img.getName());
+	}
 
 	public void setImg(File img) {
 		this.img = img;
@@ -37,20 +41,20 @@ public class PSprite extends GameObject { // FIX!!!
 	@Override
 	public void draw(PApplet p) {
 		PImage img = new PImage();
-		p.loadImage(this.img.getName());
+		img = p.loadImage(this.img.getName());
 		img.resize(this.w, this.h);
 		p.image(img, x, y);
 	}
 
 	@Override
 	public void move(int xMove, int yMove) {
-// TODO Auto-generated method stub
-
+		this.x += xMove;
+		this.y += yMove;
 	}
 
 	@Override
 	public boolean collide(GameObject g) {
-// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
 		return false;
 	}
 
