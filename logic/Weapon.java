@@ -1,62 +1,41 @@
 import processing.core.PApplet;
 
 public class Weapon extends GameObject {
+	
+	private PSprite ps;
 
-	public Weapon(int width, int height, int x, int y, int speed) {
-
+	public Weapon(PSprite p, int width, int height, int x, int y, int speed) {
 		super(width, height, x, y, speed);
-
+		ps = p;
 	}
 
+	//Interface Methods:
 	@Override
 	public void move(int xMove, int yMove) {
-
 		setX(getX() + xMove);
-
 		setY(getY() + yMove);
-
 	}
 
 	@Override
 	public boolean collide(GameObject g) {
-
-		// Check if the Weapon hitbox collides with a player hitbox
-
-		// X and Y coordinates are the center of the image/hitbox rectangle
-
-		Character c = new Character(0, 0, 0, 0, 0);
-
-		if (g.getClass() != c.getClass()) // Ensure Weapon hits a player
-
+		Character w = new Character(ps, 0, 0, 0, 0, 0);
+		if(g.getClass() != w.getClass()) {
 			return false;
-
-		else {
-
-			if ((this.getX() + this.getWidth() / 2 >= g.getX() - g.getWidth() / 2) &&
-
-					(this.getY() + this.getHeight() / 2 >= g.getY() - g.getHeight() / 2) &&
-
-					(this.getY() - this.getHeight() / 2 <= g.getY() + g.getHeight())) {
-
-				return true;
-
-			}
-
-			else {
-
-				return false;
-
-			}
-
 		}
-
+		else {
+			Character temp = (Character)g;
+			if(this.getHitbox().intersects(temp.getHitbox())) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
 	}
 
 	@Override
 	public void draw(PApplet p) {
-
-		// TODO Auto-generated method stub
-
+		ps.draw(p);		
 	}
 
 }
