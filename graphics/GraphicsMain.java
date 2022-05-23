@@ -1,6 +1,7 @@
 import java.io.File;
 
 import processing.core.PApplet;
+	PImage img;
 
 public class GraphicsMain extends PApplet {
 	
@@ -20,7 +21,7 @@ public class GraphicsMain extends PApplet {
 	}
 
 	public void settings() {
-		size(1400, 700);
+		size(1300, 750);
 	}
 
 	public void setup() {
@@ -31,13 +32,25 @@ public class GraphicsMain extends PApplet {
 		PSprite p2 = new PSprite(g, 200, 200, 200, 350);
 		p2.printFileName();
 		p2.draw(this);
-		
+		image(img, 0, 0, width, height);
 	}
 
 	public void draw() {
 		
 	}
-	
+	  public void drawMenu() {
+	  img = loadImage("menu.jpg");
+ 	 }
+  
+  
+  	public void drawBackground() {
+	  img = loadImage("background.png");
+	  }
+  
+  
+	  public void drawResults() {
+	  img = loadImage("results.jpg");
+  	}
 	/**
 	 * Checks for User Inputs
 	 * Player 1 Controls: WASD
