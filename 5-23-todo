@@ -1,3 +1,8 @@
+5/23/2022:
 Reorganize PSprite to only account for image, not draw (DONE)
-Get keyboard inputs to work
+Get keyboard inputs to work (DONE)
 Reorganize Character and Weapon into Drawable Versions (DONE)
+
+5/24/2022:
+
+
