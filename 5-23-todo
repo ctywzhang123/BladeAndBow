@@ -1,0 +1,3 @@
+Reorganize PSprite to only account for image, not draw
+Get keyboard inputs to work
+Reorganize Character and Weapon into Drawable Versions
