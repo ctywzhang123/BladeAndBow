@@ -1,6 +1,6 @@
 import processing.core.PApplet;
 
-public class Weapon extends GameObject {
+public class Weapon extends GameObject { //UPDATE HITBOX
 	
 	private PSprite ps;
 
@@ -11,7 +11,7 @@ public class Weapon extends GameObject {
 
 	//Interface Methods:
 	@Override
-	public void move(int xMove, int yMove) {
+	public void move(int xMove, int yMove) { //UPDATE HITBOX HERE
 		setX(getX() + xMove);
 		setY(getY() + yMove);
 	}
