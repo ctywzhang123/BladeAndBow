@@ -1,12 +1,10 @@
 import java.io.File;
 
-import processing.core.PApplet;
-import processing.core.PImage;
 
-public class PSprite extends GameObject { // FIX!!!
+public class PSprite { 
 	private File img;
-	private int x, y, w, h;
-
+	private int width, height, x, y;
+	
 	/**
 	 * Constructs a PSprite object
 	 * 
@@ -17,45 +15,62 @@ public class PSprite extends GameObject { // FIX!!!
 	 * @param y     - y-coordinate
 	 * @param speed - move speed
 	 */
-	public PSprite(File img, int w, int h, int x, int y) {
-		super(w, h, x, y, 1);
+	public PSprite(File img, int width, int height, int x, int y) {
 		this.img = img;
+		this.width = width;
+		this.height = height;
 		this.x = x;
 		this.y = y;
-		this.w = w;
-		this.h = h;
 	}
 
 	public File getImg() {
 		return img;
+	}
+
+	public void setImg(File img) {
+		this.img = img;
+	}
+	
+	public String getFileName() {
+		return img.getName();
 	}
 	
 	public void printFileName() {
 		System.out.println(img.getName());
 	}
 
-	public void setImg(File img) {
-		this.img = img;
+	public int getWidth() {
+		return width;
 	}
 
-	@Override
-	public void draw(PApplet p) {
-		PImage img = new PImage();
-		img = p.loadImage(this.img.getName());
-		img.resize(this.w, this.h);
-		p.image(img, x, y);
+	public void setWidth(int w) {
+		this.width = w;
 	}
 
-	@Override
-	public void move(int xMove, int yMove) {
-		this.x += xMove;
-		this.y += yMove;
+	public int getHeight() {
+		return height;
 	}
 
-	@Override
-	public boolean collide(GameObject g) {
-		// TODO Auto-generated method stub
-		return false;
+	public void setHeight(int h) {
+		this.height = h;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
 	}
 
 }
+
+
