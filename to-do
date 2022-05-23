@@ -1,5 +1,5 @@
-1. Hitboxes
-2. Sprites
+1. Hitboxes (Mostly Complete, used Rectangle Class + Methods)
+2. Sprites (Partially Complete)
 3. Knockback + Gravity
 4. Buttons for Menu Screen
 5. Animations (For Attacks, Movement, etc.)
