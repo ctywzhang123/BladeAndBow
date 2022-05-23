@@ -1,38 +1,48 @@
 import java.awt.Rectangle;
 
-public abstract class GameObject implements Movable,Collidable,PDrawable {
+public abstract class GameObject implements Movable, Collidable {
 
 	// Sprite Fields:
 	private int width; // Sprite Width
 	private int height; // Sprite Height
 	private int x; // Sprite Coords
 	private int y; // Sprite Coords
-	
-	//Sprite Hitbox using Rectangle Class:
+	private int speed; // Sprite Speed
+
+	// Sprite Hitbox using Rectangle Class:
 	private Rectangle hitbox;
 
-	// Characteristic Fields:
-	private int speed;
+	// PSprite:
+	private PSprite ps;
 
 	// Constructor:
-	public GameObject(int width, int height, int x, int y, int speed) {
-              this.width = width;
-              this.height = height;
-              this.x = x;
-              this.y = y;
-              this.speed = speed;
-              this.hitbox = new Rectangle(this.height, this.width, this.x, this.y);
-       }
+	public GameObject(PSprite ps, int width, int height, int x, int y, int speed) {
+		this.ps = ps;
+		this.width = width;
+		this.height = height;
+		this.x = x;
+		this.y = y;
+		this.speed = speed;
+		this.hitbox = new Rectangle(this.height, this.width, this.x, this.y);
+	}
 
-	//Getters and Setters:
+	// Getters and Setters:
+	public PSprite getSprite() {
+		return ps;
+	}
+	
+	public void setSprite(PSprite p) {
+		ps = p;
+	}
+	
 	public Rectangle getHitbox() {
 		return hitbox;
 	}
-	
+
 	public void setHitbox(Rectangle r) {
 		hitbox = r;
 	}
-	
+
 	public int getWidth() {
 		return width;
 	}
@@ -73,5 +83,8 @@ public abstract class GameObject implements Movable,Collidable,PDrawable {
 		this.speed = speed;
 	}
 
-	//Methods:
+	// Methods:
+
 }
+
+
