@@ -1,5 +1,5 @@
 import java.io.File;
-
+import processing.core.PImage;
 import processing.core.PApplet;
 	PImage img;
 
