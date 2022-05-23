@@ -1,24 +1,24 @@
-import processing.core.PApplet;
 
-public class Weapon extends GameObject { //UPDATE HITBOX
+public class Weapon extends GameObject {
 	
-	private PSprite ps;
+	PSprite temp = new PSprite(null, 0, 0, 0, 0);
+	private boolean walk;
+	private boolean jump;
 
-	public Weapon(PSprite p, int width, int height, int x, int y, int speed) {
-		super(width, height, x, y, speed);
-		ps = p;
+	public Weapon(PSprite p, int speed) {
+		super(p, p.getWidth(), p.getHeight(), p.getX(), p.getY(), speed);
 	}
 
 	//Interface Methods:
 	@Override
-	public void move(int xMove, int yMove) { //UPDATE HITBOX HERE
+	public void move(int xMove, int yMove) {
 		setX(getX() + xMove);
 		setY(getY() + yMove);
 	}
 
 	@Override
 	public boolean collide(GameObject g) {
-		Character w = new Character(ps, 0, 0, 0, 0, 0);
+		Character w = new Character(temp, 0);
 		if(g.getClass() != w.getClass()) {
 			return false;
 		}
@@ -33,9 +33,6 @@ public class Weapon extends GameObject { //UPDATE HITBOX
 		}
 	}
 
-	@Override
-	public void draw(PApplet p) {
-		ps.draw(p);		
-	}
-
 }
+
+
