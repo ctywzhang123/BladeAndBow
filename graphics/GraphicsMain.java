@@ -10,16 +10,35 @@ public class GraphicsMain extends PApplet {
 	File g = new File("PlayerSprite2.png");
 
 	// Player Sprites:
-	PSprite p1 = new PSprite(f, 50, 40, 700, 350);
-	PSprite p2 = new PSprite(g, 50, 40, 200, 350);
+	PSprite p1 = new PSprite(f, 50, 40, 200, 350);
+	PSprite p2 = new PSprite(g, 50, 40, 700, 350);
 
 	// Player Characters:
-	private Character player1 = new Character(p1, 10);
-	private Character player2 = new Character(p2, 10);
+	private Character player1 = new Character(p1, 5);
+	private Character player2 = new Character(p2, 5);
+	
+	//Player Weapons:
+	private Weapon weapon1; //FIX
+	private Weapon weapon2; //FIX
 
 	// Drawable Characters:
 	private DrawableCharacter dPlayer1 = new DrawableCharacter(player1);
 	private DrawableCharacter dPlayer2 = new DrawableCharacter(player2);
+	
+	//Drawable Weapons:
+	private DrawableWeapon dWeapon1 = new DrawableWeapon(weapon1);
+	private DrawableWeapon dWeapon2 = new DrawableWeapon(weapon2);
+	
+	//Movement:
+	private boolean left1 = false;
+	private boolean up1 = false;
+	private boolean right1 = false;
+	private boolean down1 = false;
+
+	private boolean left2 = false;
+	private boolean up2 = false;
+	private boolean right2 = false;
+	private boolean down2 = false;
 
 	// Game Status Fields:
 	private boolean inCombat = true;
@@ -39,10 +58,12 @@ public class GraphicsMain extends PApplet {
 	}
 
 	public void draw() {
+		//In Draw, check and move accordingly
+		moveCheck();
 		background(0, 255, 0);
-		System.out.println("loop");
 		dPlayer1.draw(this);
 		dPlayer2.draw(this);
+		drawCombatBar();
 	}
 
 	public void drawMenu() {
@@ -63,45 +84,117 @@ public class GraphicsMain extends PApplet {
 	 */
 	public void keyPressed() {
 		if (inCombat) { // Checks if in combat
-			System.out.println(key);
-			if (key == 'd') {
-				System.out.println("chad");
-			}
 			if (key == 'w' || key == 'a' || key == 's' || key == 'd') {
 				// Move Player 1 based on direction
 				if (key == 'w' || key == 'W') {
-					player1.move(0, -player1.getSpeed());
+					up1 = true;
 				} 
 				else if (key == 'a' || key == 'A') {
-					player1.move(-player1.getSpeed(), 0);
+					left1 = true;
 				} 
 				else if (key == 's') {
-					player1.move(0, player1.getSpeed());
+					down1 = true;
 				} 
 				else if (key == 'd') {
-					player1.move(player1.getSpeed(), 0);
+					right1 = true;
 				}
-
 			} else if (key == CODED) {
 				if (keyCode == UP || keyCode == LEFT || keyCode == RIGHT || keyCode == DOWN) {
 					// Move Player 2 based on direction
 					if (keyCode == UP) {
-						player2.move(0, -player2.getSpeed());
+						up2 = true;
 					} 
 					else if (keyCode == LEFT) {
-						player2.move(-player2.getSpeed(), 0);
+						left2 = true;
 					} 
 					else if (keyCode == RIGHT) {
-						player2.move(player2.getSpeed(), 0);
+						right2 = true;
 					} 
 					else if (keyCode == DOWN) {
-						player2.move(0, player2.getSpeed());
+						down2 = true;
 					}
 				}
 			}
 		}
 	}
 
+	/**
+	 * Checks for Jumps and Smooth Movement
+	 */
+	public void keyReleased() {
+		if(key != CODED) {
+			//Player 1 Smooth Movement
+			if (key == 'w') {
+				up1 = false;
+			} 
+			else if (key == 'a') {
+				left1 = false;
+			} 
+			else if (key == 's') {
+				down1 = false;
+			} 
+			else if (key == 'd') {
+				right1 = false;
+			}
+		}
+		else {
+			//Player 2 Smooth Movement
+			if (keyCode == UP) {
+				up2 = false;
+			} 
+			else if (keyCode == LEFT) {
+				left2 = false;
+			} 
+			else if (keyCode == DOWN) {
+				down2 = false;
+			} 
+			else if (keyCode == RIGHT) {
+				right2 = false;
+			}
+		}
+	}
+	
+	/**
+	 * Checks the status of movement booleans and moves either player accordingly, allowing for smooth movement
+	 */
+	public void moveCheck() {
+		if(left1) {
+			player1.move(-player1.getSpeed(), 0);
+		}
+		if(up1) {
+			player1.move(0, -player1.getSpeed());
+		}
+		if(down1) {
+			player1.move(0, player1.getSpeed());
+		}
+		if(right1) {
+			player1.move(player1.getSpeed(), 0);
+		}
+		if(left2) {
+			player2.move(-player2.getSpeed(), 0);
+		}
+		if(up2) {
+			player2.move(0, -player2.getSpeed());
+		}
+		if(down2) {
+			player2.move(0, player2.getSpeed());
+		}
+		if(right2) {
+			player2.move(player2.getSpeed(), 0);
+		}
+	}
+	
+	/**
+	 * Draws the Bottom Black Bar during Combat Mode
+	 */
+	public void drawCombatBar() {
+		if(inCombat) {
+			fill(0,0,0);
+			rect(0, height - 160, width, 160);
+			//Add Other Stuff
+		}
+	}
+	
 	public void drawFrontPage() {
 		// Add Buttons and Animation later
 	}
