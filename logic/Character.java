@@ -1,3 +1,4 @@
+import java.awt.Rectangle;
 
 public class Character extends GameObject {
 	
@@ -12,13 +13,15 @@ public class Character extends GameObject {
 	//Interface Methods:
 	@Override
 	public void move(int xMove, int yMove) {
+		//UPDATE HITBOX
 		setX(getX() + xMove);
 		setY(getY() + yMove);
+		setHitbox(new Rectangle(getX(), getY(), getWidth(), getHeight()));
 	}
 
-	@Override
+	@Override //CHANGE BACK
 	public boolean collide(GameObject g) {
-		Weapon w = new Weapon(temp, 0);
+		Weapon w = new Weapon(temp, 0); //TEMPORARY CHECK
 		if(g.getClass() != w.getClass()) {
 			return false;
 		}
