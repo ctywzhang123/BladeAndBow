@@ -1,3 +1,4 @@
+import java.awt.Rectangle;
 
 public class Weapon extends GameObject {
 	
@@ -14,6 +15,7 @@ public class Weapon extends GameObject {
 	public void move(int xMove, int yMove) {
 		setX(getX() + xMove);
 		setY(getY() + yMove);
+		setHitbox(new Rectangle(getX(), getY(), getWidth(), getHeight()));
 	}
 
 	@Override
