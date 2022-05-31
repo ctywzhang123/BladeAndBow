@@ -55,28 +55,29 @@ public class GraphicsMain extends PApplet {
 
 	public void setup() {
 		drawBackground();
+		frameRate(60);
+
 
 	}
 
 	public void draw() {
 		//In Draw, check and move accordingly
 		moveCheck();
-		background(0,0,0);
-		image(img, 0, 0, width, height);
+		image(img, 0, 0);
 
 		dPlayer1.draw(this);
 		dPlayer2.draw(this);
-		drawCombatBar();
-		drawMenu();
+//		drawCombatBar();
 
 	}
 
 	public void drawMenu() {
-		img = loadImage("menu_test.jpg");
+		img = loadImage("menu_test.png");
 	}
 
 	public void drawBackground() {
 		img = loadImage("background.png");
+		img.resize(width, height);
 	}
 
 	public void drawResults() {
