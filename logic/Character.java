@@ -103,5 +103,3 @@ public class Character extends GameObject implements Jumpable{
 		setYVelocity(getYVelocity() - gravity);
 	}
 }
-
-
