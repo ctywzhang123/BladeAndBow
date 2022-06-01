@@ -86,5 +86,3 @@ public abstract class GameObject implements Movable, Collidable {
 	// Methods:
 
 }
-
-
