@@ -95,6 +95,7 @@ public class GraphicsMain extends PApplet {
 		
 		//Draw:
 		background(0, 255, 0);
+		image(img, 0, 0);
 		imageMode(CENTER);
 		dPlayer1.draw(this);
 		dPlayer2.draw(this);
@@ -106,15 +107,19 @@ public class GraphicsMain extends PApplet {
 	}
 
 	public void drawMenu() {
-		img = loadImage("menu.jpg");
+		img = loadImage("menu.png");
+		img.resize(width,  height);
 	}
 
 	public void drawBackground() {
 		img = loadImage("background.png");
+		img.resize(width, height);
 	}
 
 	public void drawResults() {
 		img = loadImage("results.jpg");
+		img.resize(width,  height);
+
 	}
 
 	/**
