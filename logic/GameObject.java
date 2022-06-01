@@ -23,7 +23,7 @@ public abstract class GameObject implements Movable, Collidable {
 		this.x = x;
 		this.y = y;
 		this.speed = speed;
-		this.hitbox = new Rectangle(this.height, this.width, this.x, this.y);
+		this.hitbox = new Rectangle(x - width/2, y - height/2, width, height);
 	}
 
 	// Getters and Setters:
