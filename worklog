@@ -20,5 +20,10 @@ GraphicsMain Cleanup (Fixed small bug with collisions, Halfway)
 
 6/4/2022:
 Attack Cooldowns (DONE, Possibly few Errors)
-Sort out Images
-Screens
+Sort out Images (Incomplete)
+Screens (Incomplete)
+
+6/5/2022:
+Implement Array and ArrayList
+GameOver
+SelectionScreen
