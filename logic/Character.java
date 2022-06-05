@@ -11,9 +11,10 @@ public class Character extends GameObject implements Jumpable{
 	private boolean facingLeft; //TRUE = LEFT, FALSE = RIGHT
 	private boolean jump;
 	private boolean fall;
+	private boolean shielded;
 	
 	//Player Health:
-	private static int health;
+	private int health;
 	private int originalHealth;
 	
 	public Character(PSprite p, int speed, int playerHealth) {
@@ -99,7 +100,8 @@ public class Character extends GameObject implements Jumpable{
 
 	@Override
 	public void jump(PApplet p) {
-		setXVelocity(getXVelocity() - gravity);
 		setYVelocity(getYVelocity() - gravity);
 	}
 }
+
+
