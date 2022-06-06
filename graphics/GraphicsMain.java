@@ -6,1094 +6,984 @@ import processing.core.PImage;
 
 import processing.core.PApplet;
 
- 
-
 public class GraphicsMain extends PApplet {
 
-                //Controls:
+	// Controls:
 
-                //DOWN or 'S' = Blade Attack
+	// DOWN or 'S' = Blade Attack
 
-                //Z or M = Bow Attack   
+	// Z or M = Bow Attack
 
-               
+	// Platform Bar Y-coordinate:
 
-                // Platform Bar Y-coordinate:
+	private int bottomBar = 160;
 
-                private int bottomBar = 160;
+	// Attack Cooldowns:
 
-               
+	static double cooldownTimer1;
 
-                //Attack Cooldowns:
+	static double cooldownTimer2;
 
-                static double cooldownTimer1;
+	static double bowCooldownTimer1;
 
-                static double cooldownTimer2;
+	static double bowCooldownTimer2;
 
-                static double bowCooldownTimer1;
+	// Arrow Directions:
 
-                static double bowCooldownTimer2;
+	int arrowDirection1 = 1;
 
-               
+	int arrowDirection2 = 1;
 
-                //Arrow Directions:
+	// Sample Sprites:
 
-                int arrowDirection1 = 1;
+	PImage img;
 
-                int arrowDirection2 = 1;
+	File f = new File("PlayerSprite1.png");
 
-               
+	File g = new File("PlayerSprite2.png");
 
-                // Sample Sprites:
+	File sampleW = new File("SampleWeapon.PNG");
 
-                PImage img;
+	File sampleB = new File("SampleBow.PNG");
 
-                File f = new File("PlayerSprite1.png");
+	// PSprites:
 
-                File g = new File("PlayerSprite2.png");
+	PSprite p1 = new PSprite(f, 50, 40, 200, 450);
 
-                File sampleW = new File("SampleWeapon.PNG");
+	PSprite p2 = new PSprite(g, 50, 40, 700, 450);
 
-                File sampleB = new File("SampleBow.PNG");
+	PSprite sampleBlade1 = new PSprite(sampleW, 15, 30, p1.getX() + 2 * p1.getWidth() / 3, p1.getY());
 
- 
+	PSprite sampleBlade2 = new PSprite(sampleW, 15, 30, p2.getX() + 2 * p2.getWidth() / 3, p2.getY());
 
-                // PSprites:
+	PSprite sampleBow1 = new PSprite(sampleB, 30, 10, p1.getX() + 2 * p1.getWidth() / 3, p1.getY());
 
-                PSprite p1 = new PSprite(f, 50, 40, 200, 450);
+	PSprite sampleBow2 = new PSprite(sampleB, 30, 10, p2.getX() + 2 * p2.getWidth() / 3, p2.getY());
 
-                PSprite p2 = new PSprite(g, 50, 40, 700, 450);
+	// Player Characters:
 
-                PSprite sampleBlade1 = new PSprite(sampleW, 15, 30, p1.getX() + 2 * p1.getWidth() / 3, p1.getY());
+	private Character player1 = new Character(p1, 5, 40);
 
-                PSprite sampleBlade2 = new PSprite(sampleW, 15, 30, p2.getX() + 2 * p2.getWidth() / 3, p2.getY());
+	private Character player2 = new Character(p2, 5, 40);
 
-               
+	// Player Weapons:
 
-                PSprite sampleBow1 = new PSprite(sampleB, 30, 10, p1.getX() + 2 * p1.getWidth() / 3, p1.getY());
+	private Weapon weapon1 = new Blade(sampleBlade1, 5, 2, 1);
 
-                PSprite sampleBow2 = new PSprite(sampleB, 30, 10, p2.getX() + 2 * p2.getWidth() / 3, p2.getY());
+	private Weapon weapon2 = new Blade(sampleBlade2, 5, 2, 0.5);
 
- 
+	private Weapon bow1 = new Bow(sampleBow1, 14, 3, 0.5);
 
-                // Player Characters:
+	private Weapon bow2 = new Bow(sampleBow2, 30, 3, 1);
 
-                private Character player1 = new Character(p1, 5, 40);
+	// Array of Possible Bows + Blades:
 
-                private Character player2 = new Character(p2, 5, 40);
+	Bow[] bowSelection = new Bow[4];
 
-               
+	Blade[] bladeSelection = new Blade[4];
 
-                // Player Weapons:
+	// Drawable Characters:
 
-                private Weapon weapon1 = new Blade(sampleBlade1, 5, 2, 1);
+	private DrawableCharacter dPlayer1;
 
-                private Weapon weapon2 = new Blade(sampleBlade2, 5, 2, 0.5);
+	private DrawableCharacter dPlayer2;
 
-               
+	// Gravity + Jump Fields:
 
-                private Weapon bow1 = new Bow(sampleBow1,14,3,0.5);
+	private static int gravity = -10;
 
-                private Weapon bow2 = new Bow(sampleBow2,30,3,1);
+	// Drawable Blades:
 
-               
+	private DrawableWeapon dWeapon1;
 
-                //Array of Possible Bows + Blades:
+	private DrawableWeapon dWeapon2;
 
-                Bow[] bowSelection = new Bow[4];
+	// Drawable Bows:
 
-                Blade[] bladeSelection = new Blade[4];
+	private DrawableWeapon dBow1;
 
-                                               
+	private DrawableWeapon dBow2;
 
-                // Drawable Characters:
+	// Movement:
 
-                private DrawableCharacter dPlayer1;
+	private boolean left1 = false;
 
-                private DrawableCharacter dPlayer2;
+	private boolean up1 = false;
 
-               
+	private boolean right1 = false;
 
-                // Gravity + Jump Fields:
+	private boolean down1 = false;
 
-                private static int gravity = -10;
+	private boolean left2 = false;
 
-               
+	private boolean up2 = false;
 
-                // Drawable Blades:
+	private boolean right2 = false;
 
-                private DrawableWeapon dWeapon1;
+	private boolean down2 = false;
 
-                private DrawableWeapon dWeapon2;
+	// Game Status Fields:
 
-               
+	private boolean inCombat = true;
 
-                // Drawable Bows:
+	private boolean endScreen = false;
 
-                private DrawableWeapon dBow1;
+	private boolean inFrontPage = false;
 
-                private DrawableWeapon dBow2;
+	private boolean inSelection = false;
 
-               
+	public static void main(String[] args) {
 
-                // Movement:
+		PApplet.main("GraphicsMain");
 
-                private boolean left1 = false;
+	}
 
-                private boolean up1 = false;
+	public void settings() {
 
-                private boolean right1 = false;
+		size(1300, 750);
 
-                private boolean down1 = false;
+	}
 
- 
+	public void setup() {
 
-                private boolean left2 = false;
+		background(0, 255, 0);
 
-                private boolean up2 = false;
+		dWeapon1 = new DrawableWeapon(weapon1, this);
 
-                private boolean right2 = false;
+		dWeapon2 = new DrawableWeapon(weapon2, this);
 
-                private boolean down2 = false;
+		dPlayer1 = new DrawableCharacter(player1, this);
 
- 
+		dPlayer2 = new DrawableCharacter(player2, this);
 
-                // Game Status Fields:
+		dBow1 = new DrawableWeapon(bow1, this);
 
-                private boolean inCombat = true;
+		dBow2 = new DrawableWeapon(bow2, this);
 
-                private boolean endScreen = false;
+	}
 
-                private boolean inFrontPage = false;
+	public void draw() {
 
-                private boolean inSelection = false;
+		inCombat = true;
 
- 
+		inSelection = false;
 
-                public static void main(String[] args) {
+		if (inCombat) {
 
-                                PApplet.main("GraphicsMain");
+			// Update Positions and Drawings:
 
-                }
+			moveCheck();
 
- 
+			bowMoveCheck();
 
-                public void settings() {
+			weaponFollow();
 
-                                size(1300, 750);
+			jumpCheck();
 
-                }
+			// Check Bounds
 
- 
+			if (player1TouchingGround()) {
 
-                public void setup() {
+				up1 = false;
 
-                                background(0, 255, 0);
+				player1.setXVelocity(5);
 
-                                dWeapon1 = new DrawableWeapon(weapon1, this);
+				player1.setYVelocity(6);
 
-                                dWeapon2 = new DrawableWeapon(weapon2, this);
+			}
 
-                                dPlayer1 = new DrawableCharacter(player1, this);
+			if (player2TouchingGround()) {
 
-                                dPlayer2 = new DrawableCharacter(player2, this);
+				up2 = false;
 
-                                dBow1 = new DrawableWeapon(bow1, this);
+				player2.setXVelocity(5);
 
-                                dBow2 = new DrawableWeapon(bow2, this);
+				player2.setYVelocity(6);
 
-                }
+			}
 
- 
+			// Check Game/Weapon/Character States:
 
-                public void draw() {
+			checkCooldowns();
 
-                                inCombat = true;
+			// Draw:
 
-                                inSelection = false;
+			background(0, 255, 0);
 
-                                if(inCombat) {
+			imageMode(CENTER);
 
-                                                // Update Positions and Drawings:
+			dPlayer1.draw(this);
 
-                                                moveCheck();
+			dPlayer2.draw(this);
 
-                                                bowMoveCheck();
+			imageMode(CENTER);
 
-                                                weaponFollow();
+			dWeapon1.draw(this);
 
-                                                jumpCheck();
+			dWeapon2.draw(this);
 
-                                               
+			imageMode(CENTER);
 
-                                                // Check Bounds
+			dBow1.draw(this);
 
-                                                if (player1TouchingGround()) {
-
-                                                                up1 = false;
-
-                                                                player1.setXVelocity(5);
-
-                                                                player1.setYVelocity(6);
-
-                                                }
-
-                                                if (player2TouchingGround()) {
-
-                                                                up2 = false;
-
-                                                                player2.setXVelocity(5);
-
-                                                                player2.setYVelocity(6);
-
-                                                }
-
-                                               
-
-                                                //Check Game/Weapon/Character States:
-
-                                                checkCooldowns();
-
-                                               
-
-                                                // Draw:
-
-                                                background(0, 255, 0);
-
-                                                imageMode(CENTER);
-
-                                                dPlayer1.draw(this);
-
-                                                dPlayer2.draw(this);
-
-                                                imageMode(CENTER);
-
-                                                dWeapon1.draw(this);
-
-                                                dWeapon2.draw(this);
-
-                                                imageMode(CENTER);
-
-                                                dBow1.draw(this);
-
-                                                dBow2.draw(this);
+			dBow2.draw(this);
 
 //                                drawPlayerHitboxes();
 
 //                                            drawWeaponHitboxes();
 
-                                                drawCombatBar();
+			drawCombatBar();
 
-                                                gameOver();
+			gameOver();
 
-                                }
+		}
 
-                                if(inSelection) {
+		if (inSelection) {
 
-                                                background(0,0,255);
+			background(0, 0, 255);
 
-                                                //Dividing Bar Down the Middle:
+			// Dividing Bar Down the Middle:
 
-                                                fill(0,0,0);
+			fill(0, 0, 0);
 
-                                                rect(width/2 - 5, 0, 10, height);
+			rect(width / 2 - 5, 0, 10, height);
 
-                                               
+		}
 
-                                }
+	}
 
-                }
+	public void drawMenu() {
 
- 
+		img = loadImage("menu.jpg");
 
-                public void drawMenu() {
+	}
 
-                                img = loadImage("menu.jpg");
+	public void drawBackground() {
 
-                }
+		img = loadImage("background.png");
 
- 
+	}
 
-                public void drawBackground() {
+	public void drawResults() {
 
-                                img = loadImage("background.png");
+		img = loadImage("results.jpg");
 
-                }
+	}
 
- 
+	/**
+	 * Checks for User Inputs Player 1 Controls: WASD Player 2 Controls: Arrow Keys
+	 */
 
-                public void drawResults() {
+	public void keyPressed() {
 
-                                img = loadImage("results.jpg");
+		if (inSelection) {
 
-                }
+		}
 
- 
+		if (inCombat) { // Checks if in combat
 
-                /**
+			if (key == 'w' || key == 'a' || key == 's' || key == 'd' || key == 'z' || key == 'm') {
 
-                * Checks for User Inputs Player 1 Controls: WASD Player 2 Controls: Arrow
+				// Move Player 1 based on direction
 
-                * Keys
+				if (key == 'w' || key == 'W') {
 
-                */
+					up1 = true;
 
-                public void keyPressed() {
+				} else if (key == 'a' || key == 'A') {
 
-                                if(inSelection) {
+					left1 = true;
 
-                                               
+					player1.setFacingLeft(true);
 
-                                }
+				} else if (key == 's') {
 
-                                if (inCombat) { // Checks if in combat
+					if (weapon1.getAttack() == -1) {
 
-                                                if (key == 'w' || key == 'a' || key == 's' || key == 'd' || key == 'z' || key == 'm') {
+						weapon1.attack();
 
-                                                                // Move Player 1 based on direction
+					}
 
-                                                                if (key == 'w' || key == 'W') {
+					down1 = true;
 
-                                                                                up1 = true;
+				} else if (key == 'd') {
 
-                                                                } else if (key == 'a' || key == 'A') {
+					right1 = true;
 
-                                                                                left1 = true;
+					player1.setFacingLeft(false);
 
-                                                                                player1.setFacingLeft(true);
+				}
 
-                                                                } else if (key == 's') {
+				else if (key == 'z') {
 
-                                                                                if(weapon1.getAttack() == -1) {
+					System.out.println("z");
 
-                                                                                                weapon1.attack();
+					if (player1.isFacingLeft()) {
 
-                                                                                }
+						arrowDirection1 = -1;
 
-                                                                                down1 = true;
+						System.out.println("left");
 
-                                                                } else if (key == 'd') {
+						System.out.println(bow1.getAttack());
 
-                                                                                right1 = true;
+					}
 
-                                                                                player1.setFacingLeft(false);
+					else {
 
-                                                                }
+						arrowDirection1 = 1;
 
-                                                                else if(key == 'z') {
+						System.out.println("right");
 
-                                                                                System.out.println("z");
+						System.out.println(bow1.getAttack());
 
-                                                                                if(player1.isFacingLeft()) {
+					}
 
-                                                                                                arrowDirection1 = -1;
+					if (bow1.getAttack() == -1) {
 
-                                                                                                System.out.println("left");
+						bow1.setAttack(1);
 
-                                                                                                System.out.println(bow1.getAttack());
+					}
 
-                                                                                }
+				}
 
-                                                                                else {
+				else if (key == 'm') {
 
-                                                                                                arrowDirection1 = 1;
+					System.out.println("m");
 
-                                                                                                System.out.println("right");
+					if (player2.isFacingLeft()) {
 
-                                                                                                System.out.println(bow1.getAttack());
+						arrowDirection2 = -1;
 
-                                                                                }
+						System.out.println("left");
 
-                                                                                if(bow1.getAttack() == -1) {
+						System.out.println(bow2.getAttack());
 
-                                                                                                bow1.setAttack(1);
+					}
 
-                                                                                }
+					else {
 
-                                                                }
+						arrowDirection2 = 1;
 
-                                                                else if(key == 'm') {
+						System.out.println("right");
 
-                                                                                System.out.println("m");
+						System.out.println(bow2.getAttack());
 
-                                                                                if(player2.isFacingLeft()) {
+					}
 
-                                                                                                arrowDirection2 = -1;
+					if (bow2.getAttack() == -1)
 
-                                                                                                System.out.println("left");
+						bow2.setAttack(1);
 
-                                                                                                System.out.println(bow2.getAttack());
+				}
 
-                                                                                }
+			} else if (key == CODED) {
 
-                                                                                else {
+				if (keyCode == UP || keyCode == LEFT || keyCode == RIGHT || keyCode == DOWN) {
 
-                                                                                                arrowDirection2 = 1;
+					// Move Player 2 based on direction
 
-                                                                                                System.out.println("right");
+					if (keyCode == UP) {
 
-                                                                                                System.out.println(bow2.getAttack());
+						up2 = true;
 
-                                                                                }
+					} else if (keyCode == LEFT) {
 
-                                                                                if(bow2.getAttack() == -1)
+						left2 = true;
 
-                                                                                                bow2.setAttack(1);
+						player2.setFacingLeft(true);
 
-                                                                }
+					} else if (keyCode == RIGHT) {
 
-                                                } else if (key == CODED) {
+						right2 = true;
 
-                                                                if (keyCode == UP || keyCode == LEFT || keyCode == RIGHT || keyCode == DOWN) {
+						player2.setFacingLeft(false);
 
-                                                                                // Move Player 2 based on direction
+					} else if (keyCode == DOWN) {
 
-                                                                                if (keyCode == UP) {
+						if (weapon2.getAttack() == -1) {
 
-                                                                                                up2 = true;
+							weapon2.attack();
 
-                                                                                } else if (keyCode == LEFT) {
+						}
 
-                                                                                                left2 = true;
+						down2 = true;
 
-                                                                                                player2.setFacingLeft(true);
+					}
 
-                                                                                } else if (keyCode == RIGHT) {
+				}
 
-                                                                                                right2 = true;
+			}
 
-                                                                                                player2.setFacingLeft(false);
+		}
 
-                                                                                } else if (keyCode == DOWN) {
+	}
 
-                                                                                                if(weapon2.getAttack() == -1) {
+	/**
+	 * Checks for Jumps and Smooth Movement
+	 */
 
-                                                                                                                weapon2.attack();
+	public void keyReleased() {
 
-                                                                                                }
+		if (key != CODED) {
 
-                                                                                                down2 = true;
+			// Player 1 Smooth Movement
 
-                                                                                }
+			if (key == 'w') {
 
-                                                                }
+				// Nothing
 
-                                                }
+			}
 
-                                }
+			else if (key == 'a')
 
-                }
+				left1 = false;
 
- 
+			else if (key == 's') {
 
-                /**
+				down1 = false;
 
-                * Checks for Jumps and Smooth Movement
+			}
 
-                */
+			else if (key == 'd')
 
-                public void keyReleased() {
+				right1 = false;
 
-                                if (key != CODED) {
+		} else {
 
-                                                // Player 1 Smooth Movement
+			// Player 2 Smooth Movement
 
-                                                if (key == 'w') {
+			if (keyCode == UP) {
 
-                                                                // Nothing
+				// Nothing
 
-                                                }
+			}
 
-                                                else if (key == 'a')
+			else if (keyCode == LEFT)
 
-                                                                left1 = false;
+				left2 = false;
 
-                                                else if (key == 's') {
+			else if (keyCode == DOWN) {
 
-                                                                down1 = false;
+				down2 = false;
 
-                                                }
+			}
 
-                                                else if (key == 'd')
+			else if (keyCode == RIGHT)
 
-                                                                right1 = false;
+				right2 = false;
 
-                                } else {
+		}
 
-                                                // Player 2 Smooth Movement
+	}
 
-                                                if (keyCode == UP) {
+	/**
+	 * Checks the status of movement booleans and moves either player accordingly,
+	 * allowing for smooth movement
+	 */
 
-                                                                // Nothing
+	public void moveCheck() {
 
-                                                }
+		if (left1 && player1.getX() > 0 + player1.getWidth() / 2) {
 
-                                                else if (keyCode == LEFT)
+			player1.move(-player1.getXVelocity(), 0);
 
-                                                                left2 = false;
+			weapon1.move(-player1.getXVelocity(), 0);
 
-                                                else if (keyCode == DOWN) {
+		}
 
-                                                                down2 = false;
+		if (up1 && player1.getY() > 0 + player1.getHeight() / 2) {
 
-                                                }
+			player1.move(0, -player1.getYVelocity()); // FIX
 
-                                                else if (keyCode == RIGHT)
+			player1.jump(this);
 
-                                                                right2 = false;
+			weapon1.move(0, -player1.getYVelocity());
 
-                                }
+		}
 
-                }
+		if (right1 && player1.getX() < width - player1.getWidth() / 2) {
 
- 
+			player1.move(player1.getXVelocity(), 0);
 
-                /**
+			weapon1.move(player1.getXVelocity(), 0);
 
-                * Checks the status of movement booleans and moves either player
+		}
 
-                * accordingly, allowing for smooth movement
+		if (left2 && player2.getX() > 0 + player2.getWidth() / 2) {
 
-                */
+			player2.move(-player2.getXVelocity(), 0);
 
-                public void moveCheck() {
+			weapon2.move(-player2.getXVelocity(), 0);
 
-                                if (left1 && player1.getX() > 0 + player1.getWidth() / 2) {
+		}
 
-                                                player1.move(-player1.getXVelocity(), 0);
+		if (up2 && player2.getY() > 0 + player2.getHeight() / 2) {
 
-                                                weapon1.move(-player1.getXVelocity(), 0);
+			player2.move(0, -player2.getYVelocity()); // FIX
 
-                                }
+			player2.jump(this);
 
-                                if (up1 && player1.getY() > 0 + player1.getHeight() / 2) {
+			weapon2.move(0, -player2.getYVelocity());
 
-                                                player1.move(0, -player1.getYVelocity()); // FIX
+		}
 
-                                                player1.jump(this);
+		if (right2 && player2.getX() < width - player2.getWidth() / 2) {
 
-                                                weapon1.move(0, -player1.getYVelocity());
+			player2.move(player2.getXVelocity(), 0);
 
-                                }
+			weapon2.move(player2.getXVelocity(), 0);
 
-                                if (right1 && player1.getX() < width - player1.getWidth() / 2) {
+		}
 
-                                                player1.move(player1.getXVelocity(), 0);
+	}
 
-                                                weapon1.move(player1.getXVelocity(), 0);
+	/**
+	 * Checks Bow Movement
+	 */
 
-                                }
+	public void bowMoveCheck() {
 
-                                if (left2 && player2.getX() > 0 + player2.getWidth() / 2) {
+		if (!bow1.getHitbox().intersects(new Rectangle(0, 0, width, height))) {
 
-                                                player2.move(-player2.getXVelocity(), 0);
+			bow1.setX(weapon1.getX());
 
-                                                weapon2.move(-player2.getXVelocity(), 0);
+			bow1.setY(weapon1.getY());
 
-                                }
+			bow1.setAttack(-1);
 
-                                if (up2 && player2.getY() > 0 + player2.getHeight() / 2) {
+			// BRING BACK THE HITBOX
 
-                                                player2.move(0, -player2.getYVelocity()); // FIX
+			System.out.println("out of bounds");
 
-                                                player2.jump(this);
+		}
 
-                                                weapon2.move(0, -player2.getYVelocity());
+		if (!bow2.getHitbox().intersects(new Rectangle(0, 0, width, height))) {
 
-                                }
+			bow2.setAttack(-1);
 
-                                if (right2 && player2.getX() < width - player2.getWidth() / 2) {
+			bow2.setX(weapon2.getX());
 
-                                                player2.move(player2.getXVelocity(), 0);
+			bow2.setY(weapon2.getY());
 
-                                                weapon2.move(player2.getXVelocity(), 0);
+		}
 
-                                }
+		if (bow1.getAttack() == 1) {
 
-                }
+			bow1.move(arrowDirection1 * bow1.getSpeed(), 0);
 
-               
+		}
 
-                /**
+		if (bow2.getAttack() == 1) {
 
-                * Checks Bow Movement
+			bow2.move(arrowDirection2 * bow2.getSpeed(), 0);
 
-                */
+		}
 
-                public void bowMoveCheck() {
+	}
 
-                                if(!bow1.getHitbox().intersects(new Rectangle(0, 0, width, height))) {
+	public void jumpCheck() {
 
-                                                bow1.setX(weapon1.getX());
+		if (up1 && player1.getY() > 0 + player1.getHeight() / 2) {
 
-                                                bow1.setY(weapon1.getY());
+			player1.move(0, -player1.getSpeed() + gravity);
 
-                                                bow1.setAttack(-1);
+			weapon1.move(0, -player1.getSpeed() + gravity);
 
-                                                //BRING BACK THE HITBOX
+		}
 
-                                                System.out.println("out of bounds");
+		if (up2 && player2.getY() > 0 + player2.getHeight() / 2) {
 
-                                }
+			player2.move(0, -player2.getSpeed() + gravity);
 
-                                if(!bow2.getHitbox().intersects(new Rectangle(0, 0, width, height))) {
+			weapon2.move(0, -player2.getSpeed() + gravity);
 
-                                                bow2.setAttack(-1);
+		}
 
-                                                bow2.setX(weapon2.getX());
+	}
 
-                                                bow2.setY(weapon2.getY());
+	/**
+	 * Draws the Bottom Black Bar and Health Bar during Combat Mode
+	 */
 
-                                }
+	public void drawCombatBar() {
 
-                                if(bow1.getAttack() == 1) {
+		if (inCombat) {
 
-                                                bow1.move(arrowDirection1 * bow1.getSpeed(), 0);
+			// Bottom Bar
 
-                                }
+			rectMode(CORNER);
 
-                                if(bow2.getAttack() == 1) {
+			fill(0, 0, 0);
 
-                                                bow2.move(arrowDirection2 * bow2.getSpeed(), 0);
+			rect(0, height - 160, width, 160);
 
-                                }
+			// //Health Bar Logic:
 
-                }
+			// Player1:
 
- 
+			fill(255, 0, 0);
 
-                public void jumpCheck() {
+			rect(30, height - 140, 300, 40);
 
-                                if (up1 && player1.getY() > 0 + player1.getHeight() / 2) {
+			fill(0, 255, 0);
 
-                                                player1.move(0, -player1.getSpeed() + gravity);
+			rect(30, height - 140, (float) (300 * ((double) player1.getHealth() / player1.getOriginalHealth())), 40);
 
-                                                weapon1.move(0, -player1.getSpeed() + gravity);
+			// Player2:
 
-                                }
+			fill(255, 0, 0);
 
-                                if (up2 && player2.getY() > 0 + player2.getHeight() / 2) {
+			rect(width - 30 - 300, height - 140, 300, 40);
 
-                                                player2.move(0, -player2.getSpeed() + gravity);
+			fill(0, 255, 0);
 
-                                                weapon2.move(0, -player2.getSpeed() + gravity);
+			rect(width - 30 - 300, height - 140,
+					(float) (300 * ((double) player2.getHealth() / player2.getOriginalHealth())), 40);
 
-                                }
+			// "if hit" logic (for left player)
 
-                }
+			if (weapon2.collide(player1) == true && player1.getHealth() > 0 && weapon2.getAttack() == 1) {
 
- 
+				fill(0, 0, 255);
 
-                /**
+				rect(100, 100, 100, 100);
 
-                * Draws the Bottom Black Bar and Health Bar during Combat Mode
+				player1.setHealth(player1.getHealth() - weapon2.getDamage());
 
-                */
-
-                public void drawCombatBar() {
-
-                                if (inCombat) {
-
-                                                // Bottom Bar
-
-                                                rectMode(CORNER);
-
-                                                fill(0, 0, 0);
-
-                                                rect(0, height - 160, width, 160);
-
-                                                // //Health Bar Logic:
-
-                                                // Player1:
-
-                                                fill(255, 0, 0);
-
-                                                rect(30, height - 140, 300, 40);
-
-                                                fill(0, 255, 0);
-
-                                                rect(30, height - 140, (float) (300 * ((double) player1.getHealth() / player1.getOriginalHealth())), 40);
-
-                                                // Player2:
-
-                                                fill(255, 0, 0);
-
-                                                rect(width - 30 - 300, height - 140, 300, 40);
-
-                                                fill(0, 255, 0);
-
-                                                rect(width - 30 - 300, height - 140, (float) (300 * ((double) player2.getHealth() / player2.getOriginalHealth())), 40);
-
-                                                // "if hit" logic (for left player)
-
-                                                if (weapon2.collide(player1) == true && player1.getHealth() > 0 && weapon2.getAttack() == 1) {
-
-                                                                fill(0, 0, 255);
-
-                                                                rect(100, 100, 100, 100);
-
-                                                                player1.setHealth(player1.getHealth() - weapon2.getDamage());
-
-                                                                //Add Knockback Here:
+				// Add Knockback Here:
 
 //                                                            player1.move(player2.getXVelocity() *3, -player2.getYVelocity() *3); //FIX!!!
 
-                                                                weapon2.setAttack(0);
+				weapon2.setAttack(0);
 
-                                                }
+			}
 
-                                                if (weapon1.collide(player2) == true && player2.getHealth() > 0 && weapon1.getAttack() == 1) {
+			if (weapon1.collide(player2) == true && player2.getHealth() > 0 && weapon1.getAttack() == 1) {
 
-                                                                fill(0, 0, 255);
+				fill(0, 0, 255);
 
-                                                                rect(900, 100, 100, 100);
+				rect(900, 100, 100, 100);
 
-                                                                player2.setHealth(player2.getHealth() - weapon1.getDamage());
+				player2.setHealth(player2.getHealth() - weapon1.getDamage());
 
-                                                                //Add Knockback Here:
+				// Add Knockback Here:
 
 //                                                            player2.move(player1.getXVelocity() *3, -player1.getYVelocity() *3); //FIX!!!
 
-                                                                weapon1.setAttack(0);
+				weapon1.setAttack(0);
 
-                                                }
+			}
 
-                                                if(bow1.collide(player2) == true && player2.getHealth() > 0 && bow1.getAttack() == 1) {
+			if (bow1.collide(player2) == true && player2.getHealth() > 0 && bow1.getAttack() == 1) {
 
-                                                                fill(255,0,0);
+				fill(255, 0, 0);
 
-                                                                rect(900,100,100,100);
+				rect(900, 100, 100, 100);
 
-                                                                player2.setHealth(player2.getHealth() - bow1.getDamage());
+				player2.setHealth(player2.getHealth() - bow1.getDamage());
 
-                                                                //Return to bow position:
+				// Return to bow position:
 
-                                                                bow1.setAttack(0);
+				bow1.setAttack(0);
 
-                                                                bow1.setX(weapon1.getX());
+				bow1.setX(weapon1.getX());
 
-                                                                bow1.setY(weapon1.getY());
+				bow1.setY(weapon1.getY());
 
-                                                               
+			}
 
-                                                }
+			if (bow2.collide(player1) == true && player1.getHealth() > 0 && bow2.getAttack() == 1) {
 
-                                                if(bow2.collide(player1) == true && player1.getHealth() > 0 && bow2.getAttack() == 1) {
+				fill(255, 0, 0);
 
-                                                                fill(255,0,0);
+				rect(900, 100, 100, 100);
 
-                                                                rect(900,100,100,100);
+				player1.setHealth(player1.getHealth() - bow2.getDamage());
 
-                                                                player1.setHealth(player1.getHealth() - bow2.getDamage());
+				bow2.setAttack(0);
 
-                                                                bow2.setAttack(0);
+				// Return to bow position:
 
-                                                                //Return to bow position:
+				bow2.setX(weapon2.getX());
 
-                                                                bow2.setX(weapon2.getX());
+				bow2.setY(weapon2.getY());
 
-                                                                bow2.setY(weapon2.getY());
+			}
 
-                                                               
+		}
 
-                                                }
+	}
 
-                                }
+	/**
+	 * Checks Cooldowns for Both Players
+	 */
 
-                }
+	public void checkCooldowns() {
 
-               
+		if (cooldownTimer1 < 0) {
 
-                /**
+			cooldownTimer1 = 0;
 
-                * Checks Cooldowns for Both Players
+		}
 
-                */
+		if (cooldownTimer2 < 0) {
 
-                public void checkCooldowns() {
+			cooldownTimer2 = 0;
 
-                                if(cooldownTimer1 < 0) {
+		}
 
-                                                cooldownTimer1 = 0;
+		if (cooldownTimer1 > 0) {
 
-                                }
+			cooldownTimer1 -= (double) 1 / (60 * weapon1.getCooldown());
 
-                                if(cooldownTimer2 < 0) {
+		}
 
-                                                cooldownTimer2 = 0;
+		if (cooldownTimer2 > 0) {
 
-                                }
+			cooldownTimer2 -= (double) 1 / (60 * weapon2.getCooldown());
 
-                                if(cooldownTimer1 > 0) {
+		}
 
-                                                cooldownTimer1 -= (double)1/(60*weapon1.getCooldown());
+		if (bowCooldownTimer1 < 0) {
 
-                                }
+			bowCooldownTimer1 = 0;
 
-                                if(cooldownTimer2 > 0) {
+		}
 
-                                                cooldownTimer2 -= (double)1/(60*weapon2.getCooldown());
+		if (bowCooldownTimer2 < 0) {
 
-                                }
+			bowCooldownTimer2 = 0;
 
-                                if(bowCooldownTimer1 < 0) {
+		}
 
-                                                bowCooldownTimer1 = 0;
+		if (bowCooldownTimer1 > 0) {
 
-                                }
+			bowCooldownTimer1 -= (double) 1 / (60 * bow1.getCooldown());
 
-                                if(bowCooldownTimer2 < 0) {
+		}
 
-                                                bowCooldownTimer2 = 0;
+		if (bowCooldownTimer2 > 0) {
 
-                                }
+			bowCooldownTimer2 -= (double) 1 / (60 * bow2.getCooldown());
 
-                                if(bowCooldownTimer1 > 0) {
+		}
 
-                                                bowCooldownTimer1 -= (double)1/(60*bow1.getCooldown());
+		if (weapon1.getAttack() == 0 && cooldownTimer1 == 0) {
 
-                                }
+			weapon1.setAttack(-1);
 
-                                if(bowCooldownTimer2 > 0) {
+			cooldownTimer1 = weapon1.getCooldown();
 
-                                                bowCooldownTimer2 -= (double)1/(60*bow2.getCooldown());
+		}
 
-                                }
+		if (weapon2.getAttack() == 0 && cooldownTimer2 == 0) {
 
-                                if(weapon1.getAttack() == 0 && cooldownTimer1 == 0) {
+			weapon2.setAttack(-1);
 
-                                                weapon1.setAttack(-1);
+			cooldownTimer2 = weapon2.getCooldown();
 
-                                                cooldownTimer1 = weapon1.getCooldown();
+		}
 
-                                }
+		if (bow1.getAttack() == 0 && bowCooldownTimer1 == 0) {
 
-                                if(weapon2.getAttack() == 0 && cooldownTimer2 == 0) {
+			bow1.setAttack(-1);
 
-                                                weapon2.setAttack(-1);
+			bowCooldownTimer1 = bow1.getCooldown();
 
-                                                cooldownTimer2 = weapon2.getCooldown();
+		}
 
-                                }
+		if (bow2.getAttack() == 0 && bowCooldownTimer2 == 0) {
 
-                                if(bow1.getAttack() == 0 && bowCooldownTimer1 == 0) {
+			bow2.setAttack(-1);
 
-                                                bow1.setAttack(-1);
+			bowCooldownTimer2 = bow2.getCooldown();
 
-                                                bowCooldownTimer1 = bow1.getCooldown();
+		}
 
-                                }
+	}
 
-                                if(bow2.getAttack() == 0 && bowCooldownTimer2 == 0) {
+	public boolean player1TouchingGround() {
 
-                                                bow2.setAttack(-1);
+		// Account for Falling Too Much:
 
-                                                bowCooldownTimer2 = bow2.getCooldown();
+		if (player1.getY() > height - bottomBar - player1.getHeight() / 2) {
 
-                                }
+			player1.setY(height - bottomBar - player1.getHeight() / 2);
 
-                }
+		}
 
- 
+		if (player1.getY() == height - bottomBar - player1.getHeight() / 2)
 
-                public boolean player1TouchingGround() {
+			return true;
 
-                                //Account for Falling Too Much:
+		else
 
-                                if(player1.getY() > height - bottomBar - player1.getHeight() / 2) {
+			return false;
 
-                                                player1.setY(height - bottomBar - player1.getHeight() / 2);
+	}
 
-                                }
+	public boolean player2TouchingGround() {
 
-                                if (player1.getY() == height - bottomBar - player1.getHeight() / 2)
+		// Account for Falling Too Much:
 
-                                                return true;
+		if (player2.getY() > height - bottomBar - player2.getHeight() / 2) {
 
-                                else
+			player2.setY(height - bottomBar - player2.getHeight() / 2);
 
-                                                return false;
+		}
 
-                }
+		if (player2.getY() == height - bottomBar - player2.getHeight() / 2)
 
- 
+			return true;
 
-                public boolean player2TouchingGround() {
+		else
 
-                                //Account for Falling Too Much:
+			return false;
 
-                                if(player2.getY() > height - bottomBar - player2.getHeight() / 2) {
+	}
 
-                                                player2.setY(height - bottomBar - player2.getHeight() / 2);
+	public void weaponFollow() { // BOW FOLLOW AS WELL
 
-                                }
+		if (player1.isFacingLeft()) {
 
-                                if (player2.getY() == height - bottomBar - player2.getHeight() / 2)
+			weapon1.setX(player1.getX() - 2 * p1.getWidth() / 3);
 
-                                                return true;
+			if (bow1.getAttack() == -1)
 
-                                else
+				bow1.setX(player1.getX() - 2 * p1.getWidth() / 3);
 
-                                                return false;
+		}
 
-                }
+		else {
 
- 
+			weapon1.setX(player1.getX() + 2 * p1.getWidth() / 3);
 
-                public void weaponFollow() { //BOW FOLLOW AS WELL
+			if (bow1.getAttack() == -1)
 
-                                if (player1.isFacingLeft()) {
+				bow1.setX(player1.getX() + 2 * p1.getWidth() / 3);
 
-                                                weapon1.setX(player1.getX() - 2 * p1.getWidth() / 3);
+		}
 
-                                                if(bow1.getAttack() == -1)
+		weapon1.setY(player1.getY());
 
-                                                                bow1.setX(player1.getX() - 2 * p1.getWidth() / 3);
+		if (bow1.getAttack() == -1)
 
-                                }
+			bow1.setY(player1.getY());
 
-                                else {
+		if (bow1.getAttack() == -1)
 
-                                                weapon1.setX(player1.getX() + 2 * p1.getWidth() / 3);
+			bow1.setY(player1.getY());
 
-                                                if(bow1.getAttack() == -1)
+		if (player2.isFacingLeft()) {
 
-                                                                bow1.setX(player1.getX() + 2 * p1.getWidth() / 3);
+			weapon2.setX(player2.getX() - 2 * p2.getWidth() / 3);
 
-                                }
+			if (bow2.getAttack() == -1 || bow2.getAttack() == 0)
 
-                                weapon1.setY(player1.getY());
+				bow2.setX(player2.getX() - 2 * p2.getWidth() / 3);
 
-                                if(bow1.getAttack() == -1)
+		}
 
-                                                bow1.setY(player1.getY());
+		else {
 
-                                if(bow1.getAttack() == -1)
+			weapon2.setX(player2.getX() + 2 * p2.getWidth() / 3);
 
-                                                bow1.setY(player1.getY());
+			if (bow2.getAttack() == -1 || bow2.getAttack() == 0)
 
-                                if (player2.isFacingLeft()) {
+				bow2.setX(player2.getX() + 2 * p2.getWidth() / 3);
 
-                                                weapon2.setX(player2.getX() - 2 * p2.getWidth() / 3);
+		}
 
-                                                if(bow2.getAttack() == -1 || bow2.getAttack() == 0)
+		weapon2.setY(player2.getY());
 
-                                                                bow2.setX(player2.getX() - 2 * p2.getWidth() / 3);
+		if (bow2.getAttack() == -1 || bow2.getAttack() == 0)
 
-                                }
+			bow2.setY(player2.getY());
 
-                                else {
+	}
 
-                                                weapon2.setX(player2.getX() + 2 * p2.getWidth() / 3);
+	public void drawPlayerHitboxes() {
 
-                                                if(bow2.getAttack() == -1 || bow2.getAttack() == 0)
+		rectMode(CORNER);
 
-                                                                bow2.setX(player2.getX() + 2 * p2.getWidth() / 3);
+		// Player1 hitbox:
 
-                                }
+		fill(0, 0, 255);
 
-                                weapon2.setY(player2.getY());
+		rect(player1.getHitbox().x, player1.getHitbox().y, player1.getHitbox().width, player1.getHitbox().height);
 
-                                if(bow2.getAttack() == -1 || bow2.getAttack() == 0)
+		// Player2 hitbox:
 
-                                                bow2.setY(player2.getY());
+		fill(0, 0, 255);
 
-                }
+		rect(player2.getHitbox().x, player2.getHitbox().y, player2.getHitbox().width, player2.getHitbox().height);
 
- 
+	}
 
-                public void drawPlayerHitboxes() {
+	public void drawWeaponHitboxes() {
 
-                                rectMode(CORNER);
+		// Weapon1 hitbox:
 
-                                // Player1 hitbox:
+		rectMode(CORNER);
 
-                                fill(0, 0, 255);
+		fill(0, 255, 255);
 
-                                rect(player1.getHitbox().x, player1.getHitbox().y, player1.getHitbox().width, player1.getHitbox().height);
+		rect((int) weapon1.getHitbox().x, (int) weapon1.getHitbox().y, weapon1.getHitbox().width,
+				weapon1.getHitbox().height);
 
-                                // Player2 hitbox:
+		// Weapon2 hitbox:
 
-                                fill(0, 0, 255);
+		fill(0, 255, 255);
 
-                                rect(player2.getHitbox().x, player2.getHitbox().y, player2.getHitbox().width, player2.getHitbox().height);
+		rect((int) weapon2.getHitbox().x, (int) weapon2.getHitbox().y, weapon2.getHitbox().width,
+				weapon2.getHitbox().height);
 
-                }
+	}
 
- 
+	public void gameOver() {
 
-                public void drawWeaponHitboxes() {
+		if (player1.getHealth() <= 0 || player2.getHealth() <= 0) {
 
-                                // Weapon1 hitbox:
+			inCombat = false;
 
-                                rectMode(CORNER);
+			if (player1.getHealth() <= 0) {
 
-                                fill(0, 255, 255);
+				background(100, 0, 0);
 
-                                rect((int) weapon1.getHitbox().x, (int) weapon1.getHitbox().y, weapon1.getHitbox().width, weapon1.getHitbox().height);
+				fill(255, 255, 255);
 
- 
+				textSize(100);
 
-                                // Weapon2 hitbox:
+				text("Player 2 Wins", 300, 200);
 
-                                fill(0, 255, 255);
+			}
 
-                                rect((int) weapon2.getHitbox().x, (int) weapon2.getHitbox().y, weapon2.getHitbox().width, weapon2.getHitbox().height);
+			else if (player2.getHealth() <= 0) {
 
-                }
+				background(0, 100, 0);
 
-               
+				fill(255, 255, 255);
 
-                public void gameOver() {
+				textSize(100);
 
-                                if(player1.getHealth() <= 0 || player2.getHealth() <= 0) {
+				text("Player 1 Wins", 300, 200);
 
-                                                inCombat = false;
+			}
 
-                                                if(player1.getHealth() <= 0) {
+		}
 
-                                                                background(100,0,0);
+	}
 
-                                                                fill(255,255,255);
+	public void drawFrontPage() {
 
-                                                                textSize(100);
+		// Add Buttons and Animation later
 
-                                                                text("Player 2 Wins", 300, 200);
+	}
 
-                                                }
+	public void drawSelectionScreen() {
 
-                                                else if(player2.getHealth() <= 0) {
+		// Add Buttons and Animation later
 
-                                                                background(0,100,0);
-
-                                                                fill(255,255,255);
-
-                                                                textSize(100);
-
-                                                                text("Player 1 Wins", 300, 200);
-
-                                                }
-
-                                }
-
-                }
-
- 
-
-                public void drawFrontPage() {
-
-                                // Add Buttons and Animation later
-
-                }
-
- 
-
-                public void drawSelectionScreen() {
-
-                                // Add Buttons and Animation later
-
-                }
-
- 
+	}
 
 }
