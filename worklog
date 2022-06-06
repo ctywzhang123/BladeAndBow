@@ -10,7 +10,7 @@ Bottom Menu Start (DONE)
 
 5/31/2022:
 Jump Mechanics (DONE)
-Attack Mechanics (Halfway)
+Attack Mechanics (DONE)
 GraphicsMain Cleanup
 
 6/1/2022:
@@ -24,7 +24,7 @@ Sort out Images (Incomplete)
 Screens (Incomplete)
 
 6/5/2022:
-Implement Array and ArrayList
+Implement Array and ArrayList (Array in-progress, ArrayList not yet)
 GameOver (COMPLETE)
-Implement Bows + Arrows (MOSTLY COMPLETE)
+Implement Bows + Arrows (MOSTLY COMPLETE, BRING BACK THE HITBOX FROM ARROW OUT OF BOUNDS)
 SelectionScreen
