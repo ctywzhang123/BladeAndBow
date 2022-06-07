@@ -1,123 +1,107 @@
 import java.awt.Rectangle;
 
- 
-
 public class Weapon extends GameObject implements Attackable {
 
-      
+	PSprite temp = new PSprite(null, 0, 0, 0, 0);
 
-       PSprite temp = new PSprite(null, 0, 0, 0, 0);
+	private boolean walk;
 
-       private boolean walk;
+	private boolean jump;
 
-       private boolean jump;
+	private int damage = 4;
 
-       private int damage = 4;
+	private double cooldown;
 
-       private double cooldown;
+	private int attack = -1; // -1 = READY (No attack), 0 = IN-PROGRESS/COOLDOWN, 1 = ATTACK REGISTERS
 
-       private int attack = -1; //-1 = READY (No attack), 0 = IN-PROGRESS/COOLDOWN, 1 = ATTACK REGISTERS
+	private Rectangle hitbox;
 
-       private Rectangle hitbox;
+	private Rectangle originalHitbox;
 
-       private Rectangle originalHitbox;
+	public Weapon(PSprite p, int speed, int damage, double cooldown) {
 
- 
+		super(p, p.getWidth(), p.getHeight(), p.getX(), p.getY(), speed);
 
-       public Weapon(PSprite p, int speed, int damage, double cooldown) {
+		this.hitbox = new Rectangle(p.getX(), p.getY(), p.getHeight(), p.getWidth());
 
-              super(p, p.getWidth(), p.getHeight(), p.getX(), p.getY(), speed);
+		this.originalHitbox = hitbox;
 
-              this.hitbox = new Rectangle(p.getX(), p.getY(), p.getHeight(), p.getWidth());
+		this.damage = damage;
 
-              this.originalHitbox = hitbox;
+		this.cooldown = cooldown;
 
-              this.damage = damage;
+	}
 
-              this.cooldown = cooldown;
+	public int getAttack() {
 
-       }
+		return attack;
 
-      
+	}
 
-       public int getAttack() {
+	public void setAttack(int attack) {
 
-              return attack;
+		this.attack = attack;
 
-       }
+	}
 
- 
+	public int getDamage() {
 
-       public void setAttack(int attack) {
+		return damage;
 
-              this.attack = attack;
+	}
 
-       }
+	public double getCooldown() {
 
-      
+		return cooldown;
 
-       public int getDamage() {
+	}
 
-              return damage;
+	// Interface Methods:
 
-       }
+	@Override
 
-      
+	public void move(int xMove, int yMove) {
 
-       public double getCooldown() {
+		setX(getX() + xMove);
 
-              return cooldown;
+		setY(getY() + yMove);
 
-       }
+		setHitbox(new Rectangle(getX() - getWidth() / 2, getY() - getHeight() / 2, getWidth(), getHeight())); // FIX
 
-      
+	}
 
-       //Interface Methods:
+	@Override
 
-       @Override
+	public boolean collide(GameObject g) {
 
-       public void move(int xMove, int yMove) {
+		if (attack == -1 || attack == 0) {
 
-              setX(getX() + xMove);
+			return false;
 
-              setY(getY() + yMove);
+		}
 
-              setHitbox(new Rectangle(getX() - getWidth()/2, getY() - getHeight()/2, getWidth(), getHeight())); //FIX
+		Character temp = (Character) g;
 
-       }
+		if (this.getHitbox().intersects(temp.getHitbox())) {
 
- 
+			return true;
 
-       @Override
+		}
 
-       public boolean collide(GameObject g) {
+		else {
 
-              if(attack == -1 || attack == 0) {
+			return false;
 
-                     return false;
+		}
 
-              }
+	}
 
-              Character temp = (Character)g;
+	@Override
 
-              if(this.getHitbox().intersects(temp.getHitbox())) {
+	public void attack() {
 
-                     return true;
+		attack = 1;
 
-              }
+	}
 
-              else {
-
-                     return false;
-
-              }
-
-       }
-
- 
-
-       @Override
-
-       public void attack() {
-
-              attack = 1;
+}
