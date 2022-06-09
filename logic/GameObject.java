@@ -13,11 +13,16 @@ public abstract class GameObject implements Movable, Collidable {
 	private Rectangle hitbox;
 
 	// PSprite:
-	private PSprite ps;
+	private PSprite leftS;
+	private PSprite rightS;
+	
+	//Direction:
+	private boolean facingLeft; //TRUE = LEFT, FALSE = RIGHT
 
 	// Constructor:
-	public GameObject(PSprite ps, int width, int height, int x, int y, int speed) {
-		this.ps = ps;
+	public GameObject(PSprite leftS, PSprite rightS, int width, int height, int x, int y, int speed) {
+		this.leftS = leftS;
+		this.rightS = rightS;
 		this.width = width;
 		this.height = height;
 		this.x = x;
@@ -26,13 +31,25 @@ public abstract class GameObject implements Movable, Collidable {
 		this.hitbox = new Rectangle(x - width/2, y - height/2, width, height);
 	}
 
-	// Getters and Setters:
-	public PSprite getSprite() {
-		return ps;
+	public boolean isFacingLeft() {
+		return facingLeft;
 	}
 	
-	public void setSprite(PSprite p) {
-		ps = p;
+	public void setFacingLeft(boolean facingLeft) {
+		this.facingLeft = facingLeft;
+	}
+	
+	// Getters and Setters:
+	public PSprite getLeftSprite() {
+		return leftS;
+	}
+	
+	public PSprite getRightSprite() {
+		return rightS;
+	}
+	
+	public void setLeftSprite(PSprite left) {
+		leftS = left;
 	}
 	
 	public Rectangle getHitbox() {
@@ -65,6 +82,7 @@ public abstract class GameObject implements Movable, Collidable {
 
 	public void setX(int x) {
 		this.x = x;
+		hitbox = new Rectangle(this.x - width/2, y - height/2, width, height);
 	}
 
 	public int getY() {
@@ -73,6 +91,7 @@ public abstract class GameObject implements Movable, Collidable {
 
 	public void setY(int y) {
 		this.y = y;
+		hitbox = new Rectangle(x - width/2, this.y - height/2, width, height);
 	}
 
 	public int getSpeed() {
@@ -83,6 +102,7 @@ public abstract class GameObject implements Movable, Collidable {
 		this.speed = speed;
 	}
 
-	// Methods:
 
 }
+
+
