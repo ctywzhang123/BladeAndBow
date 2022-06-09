@@ -7,32 +7,20 @@ public class Character extends GameObject implements Jumpable{
 	private static int gravity = 1;
 	private int xVelocity;
 	private int yVelocity;
-	private boolean walk;
-	private boolean facingLeft; //TRUE = LEFT, FALSE = RIGHT
-	private boolean jump;
-	private boolean fall;
-	private boolean shielded;
 	
 	//Player Health:
 	private int health;
 	private int originalHealth;
 	
-	public Character(PSprite p, int speed, int playerHealth) {
-		super(p, p.getWidth(), p.getHeight(), p.getX(), p.getY(), speed);
-		xVelocity = 8;
+	public Character(PSprite pLeft, PSprite pRight, int speed, int playerHealth) {
+		super(pLeft, pRight, pLeft.getWidth(), pLeft.getHeight(), pLeft.getX(), pLeft.getY(), speed);
+		xVelocity = 6;
 		yVelocity = 8;
 		health = playerHealth;
 		originalHealth = playerHealth;
 	}
 	
 	//Methods:
-	public boolean isFacingLeft() {
-		return facingLeft;
-	}
-	
-	public void setFacingLeft(boolean facingLeft) {
-		this.facingLeft = facingLeft;
-	}
 	
 	public int getXVelocity() {
 		return xVelocity;
@@ -62,22 +50,6 @@ public class Character extends GameObject implements Jumpable{
 		this.health = health;
 	}	
 	
-	public boolean isJump() {
-		return jump;
-	}
-
-	public void setJump(boolean jump) {
-		this.jump = jump;
-	}
-	
-	public boolean isFall() {
-		return fall;
-	}
-	
-	public void setFall(boolean fall) {
-		this.fall = fall;
-	}
-		
 	//Interface Methods:
 	@Override
 	public void move(int xMove, int yMove) {
