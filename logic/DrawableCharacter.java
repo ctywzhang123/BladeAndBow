@@ -4,20 +4,30 @@ import processing.core.PImage;
 public class DrawableCharacter implements PDrawable {
 
 	private Character c;
-	PImage img = new PImage();
-
+	PImage leftImg = new PImage();
+	PImage rightImg = new PImage();
+	
 	public DrawableCharacter(Character c, PApplet p) {
 		this.c = c;
-		img = p.loadImage(c.getSprite().getFileName());
-		img.resize(c.getWidth(), c.getHeight());
+		leftImg = p.loadImage(c.getLeftSprite().getFileName());
+		leftImg.resize(c.getWidth(), c.getHeight());
+		rightImg = p.loadImage(c.getRightSprite().getFileName());
+		rightImg.resize(c.getWidth(), c.getHeight());
 	}
-
+	
 	@Override
 	public void draw(PApplet p) {
-		p.image(img, c.getX(), c.getY());
+		if(c.isFacingLeft())
+			p.image(leftImg, c.getX(), c.getY());
+		else
+			p.image(rightImg, c.getX(), c.getY());
 	}
-
+	
 	public Character getCharacter() {
 		return c;
 	}
+	
 }
+
+
+
