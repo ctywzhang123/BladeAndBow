@@ -63,8 +63,6 @@ public class GraphicsMain extends PApplet {
 	// PSprites:
 	PSprite p1 = new PSprite(char1, 50, 40, 100, 570);
 	PSprite p2 = new PSprite(char2, 50, 40, 1200, 570);
-	PSprite blade1 = new PSprite(swordBlade, 20, 40, p1.getX() + 2 * p1.getWidth() / 3, p1.getY());
-	PSprite blade2 = new PSprite(swordBlade, 20, 40, p2.getX() + 2 * p2.getWidth() / 3, p2.getY());
 	PSprite pDaggerBladeLeft1 = new PSprite(daggerBladeLeft, 20, 40, p1.getX() + 2 * p1.getWidth() / 3, p1.getY());
 	PSprite pDaggerBladeRight1 = new PSprite(daggerBladeRight, 20, 40, p1.getX() + 2 * p1.getWidth() / 3, p1.getY());	
 	PSprite pDaggerBladeLeft2 = new PSprite(daggerBladeLeft, 20, 40, p1.getX() + 2 * p1.getWidth() / 3, p1.getY());
