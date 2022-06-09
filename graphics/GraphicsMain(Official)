@@ -7,8 +7,13 @@ import processing.core.PApplet;
 
 public class GraphicsMain extends PApplet {
 	
+	//Something Unexpected???
+	ArrayList<Character> hmm = new ArrayList<Character>();
+	
 	//GIF Stuff:
-//	int optcounter = 1;
+	boolean notMenu;
+	boolean isBattleDone;
+	int optcounter = 1;
 	PImage[] images;
 	int imageCount = 8;
 	int frame = 0;
@@ -61,6 +66,8 @@ public class GraphicsMain extends PApplet {
 	// PSprites:
 	PSprite p1 = new PSprite(char1, 50, 40, 100, 570);
 	PSprite p2 = new PSprite(char2, 50, 40, 1200, 570);
+	PSprite blade1 = new PSprite(swordBlade, 20, 40, p1.getX() + 2 * p1.getWidth() / 3, p1.getY());
+	PSprite blade2 = new PSprite(swordBlade, 20, 40, p2.getX() + 2 * p2.getWidth() / 3, p2.getY());
 	PSprite pDaggerBladeLeft1 = new PSprite(daggerBladeLeft, 20, 40, p1.getX() + 2 * p1.getWidth() / 3, p1.getY());
 	PSprite pDaggerBladeRight1 = new PSprite(daggerBladeRight, 20, 40, p1.getX() + 2 * p1.getWidth() / 3, p1.getY());	
 	PSprite pDaggerBladeLeft2 = new PSprite(daggerBladeLeft, 20, 40, p1.getX() + 2 * p1.getWidth() / 3, p1.getY());
@@ -128,10 +135,7 @@ public class GraphicsMain extends PApplet {
 
 	// Game Status Fields:
 	private boolean inCombat = false;
-	private boolean gameOver = false;
-	private boolean inFrontPage = false;
-	private boolean inSelection = false;
-	private boolean notMenu = false;
+	private boolean inSelection = true;
 
 	public static void main(String[] args) {
 		PApplet.main("GraphicsMain");
@@ -143,12 +147,12 @@ public class GraphicsMain extends PApplet {
 
 	public void setup() {
 		//For Options:
-		images = new PImage[imageCount];
-	    for (int i = 1; i <= imageCount; i++) {
-    	String filename = "options" + i + ".png";
-	    	images[i-1] = loadImage(filename);
-	    	images[i-1].resize(1300, 750);
-	    }
+//		images = new PImage[imageCount];
+//	    for (int i = 1; i <= imageCount; i++) {
+//    	String filename = "options" + i + ".png";
+//	    	images[i-1] = loadImage(filename);
+//	    	images[i-1].resize(1300, 750);
+//	    }
 		
 		//Image Loading for Selection Screen:
 		daggerBladeImage = loadImage("DaggerBladeLeft.png");
@@ -175,23 +179,12 @@ public class GraphicsMain extends PApplet {
 		combatBackground.resize(1300, 630);
 		selectionBackground = loadImage("StoneBackground.jpg");
 		selectionBackground.resize(1300, 750);
-		img = loadImage("menu.png");
-		img.resize(width, height);
 	}
 
 	public void draw() {
-		
-		if (notMenu == false && inSelection == false) {
-			image(img, 0, 0);
-		}
-		
-		if (notMenu == true && inSelection == false) {
-			background(0);
-		}
 		if(inCombat) {
 			imageMode(CORNER);
-			display();
-			image(img,0,0);
+			image(combatBackground,0,0);
 			// Update Positions and Drawings:
 			moveCheck();
 			bowMoveCheck();
@@ -246,6 +239,19 @@ public class GraphicsMain extends PApplet {
 			textSize(20);
 			text("Player 1 Blade Choice : ", width/4 - 120, 120);
 			text("Player 2 Blade Choice : ", 3*width/4 - 120, 120);
+			
+			text("Damage: " + bladeSelection1[player1BladeChoice].getDamage(), width/4 - 60, 350);
+			text("Damage: " + bladeSelection2[player2BladeChoice].getDamage(), 3*width/4 - 60, 350);
+			
+			text("Cooldown: " + bladeSelection1[player1BladeChoice].getCooldown(), width/4 - 60, 400);
+			text("Cooldown: " + bladeSelection2[player2BladeChoice].getCooldown(), 3*width/4 - 60, 400);
+			
+			text("Use A or D to Navigate Blade Options", width/4 - 160, 600);
+			text("Use the Left or Right Arrow Keys to Navigate Blade Options", 3*width/4 - 275, 600);
+			
+			text("Press ENTER to Submit Both Selections", width/4 - 170, 650);
+			text("Press ENTER to Submit Both Selections", 3*width/4 - 170, 650);
+
 			//Display Images:
 			imageMode(CENTER);
 			image(weaponImages.get(player1BladeChoice), width/4, height/4);
@@ -289,65 +295,68 @@ public class GraphicsMain extends PApplet {
 			}
 		}
 		if (inCombat) { // Checks if in combat
-            if (key == 'w' || key == 'a' || key == 'c' || key == 'd' || key == 'f' || key == 'j' || key == 'm') {
-                // Move Player 1 based on direction
-                if (key == 'w' || key == 'W') {
-                    up1 = true;
-                } else if (key == 'a' || key == 'A') {
-                    left1 = true;
-                    player1.setFacingLeft(true);
-                } else if (key == 'c') {
-                    if (weapon1.getAttack() == -1) {
-                        weapon1.attack();
-                    }
-                } else if (key == 'd') {
-                    right1 = true;
-                    player1.setFacingLeft(false);
-                } else if (key == 'f') {
-                    if (player1.isFacingLeft()) {
-                        arrowDirection1 = -1;
-                    } else {
-                        arrowDirection1 = 1;
-                    }
-                    if (bow1.getAttack() == -1) {
-                        bow1.setAttack(1);
-                    }
-                } else if (key == 'j') {
-                    if (player2.isFacingLeft()) {
-                        arrowDirection2 = -1;
-                    } else {
-                        arrowDirection2 = 1;
-                    }
-                    if (bow2.getAttack() == -1)
-                        bow2.setAttack(1);
-                }
-                else if (key == 'm') {
-                    if (weapon2.getAttack() == -1) {
-                        weapon2.attack();
-                    }
-                }
-            }
-            else if (key == CODED) {
-                if (keyCode == UP || keyCode == LEFT || keyCode == RIGHT) {
-                    // Move Player 2 based on direction
-                    if (keyCode == UP) {
-                        up2 = true;
-                    } else if (keyCode == LEFT) {
-                        left2 = true;
-                        player2.setFacingLeft(true);
-                    } else if (keyCode == RIGHT) {
-                        right2 = true;
-                        player2.setFacingLeft(false);
-                    } 
-                }
-            }
-        }
-    }
+			if (key == 'w' || key == 'a' || key == 's' || key == 'd' || key == 'z' || key == 'm') {
+				// Move Player 1 based on direction
+				if (key == 'w' || key == 'W') {
+					up1 = true;
+				} else if (key == 'a' || key == 'A') {
+					left1 = true;
+					player1.setFacingLeft(true);
+				} else if (key == 's') {
+					if(weapon1.getAttack() == -1) {
+						weapon1.attack();
+					}
+				} else if (key == 'd') {
+					right1 = true;
+					player1.setFacingLeft(false);
+				}
+				else if(key == 'z') {
+					if(player1.isFacingLeft()) {
+						arrowDirection1 = -1;
+					}
+					else {
+						arrowDirection1 = 1;
+					}
+					if(bow1.getAttack() == -1) {
+						bow1.setAttack(1);
+					}
+				}
+				else if(key == 'm') {
+					if(player2.isFacingLeft()) {
+						arrowDirection2 = -1;
+					}
+					else {
+						arrowDirection2 = 1;
+					}
+					if(bow2.getAttack() == -1)
+						bow2.setAttack(1);
+				}
+			} else if (key == CODED) {
+				if (keyCode == UP || keyCode == LEFT || keyCode == RIGHT || keyCode == DOWN) {
+					// Move Player 2 based on direction
+					if (keyCode == UP) {
+						up2 = true;
+					} else if (keyCode == LEFT) {
+						left2 = true;
+						player2.setFacingLeft(true);
+					} else if (keyCode == RIGHT) {
+						right2 = true;
+						player2.setFacingLeft(false);
+					} else if (keyCode == DOWN) {
+						if(weapon2.getAttack() == -1) {
+							weapon2.attack();
+						}
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * Checks for Jumps and Smooth Movement
 	 */
 	public void keyReleased() {
+		hmm.add((key));
 		if (key != CODED) {
 			// Player 1 Smooth Movement
 			if (key == 'w') {
@@ -369,35 +378,6 @@ public class GraphicsMain extends PApplet {
 		}
 	}
 
-	public void mouseClicked() {
-		if (notMenu && inSelection == false)
-		{
-			notMenu = false;	
-		}
-		if (notMenu == false && inSelection == false)
-			if (mouseX >= 480 && mouseX <= 830 && mouseY >= 280 && mouseY <= 390) {
-				notMenu = true;
-				inCombat = true;
-				inSelection = true;
-			}
-			if (mouseX >= 355 && mouseX <= 960 && mouseY >= 415 && mouseY <= 525) {
-				notMenu = true;
-				background(0);
-				
-			}
-			
-	}
-	
-	/**
-	 * Switches the images of the background
-	 */
-	public void display() {
-		if (frame > 35)
-			frame = 0;
-	    img = images[frame/5];
-	    frame++;
-	  }
-	
 	/**
 	 * Checks the status of movement booleans and moves either player
 	 * accordingly, allowing for smooth movement
@@ -492,15 +472,11 @@ public class GraphicsMain extends PApplet {
 				weapon2.setAttack(0);
 			}
 			if (weapon1.collide(player2) == true && player2.getHealth() > 0 && weapon1.getAttack() == 1) {
-				fill(0, 0, 255);
-				rect(900, 100, 100, 100);
 				player2.setHealth(player2.getHealth() - weapon1.getDamage());
 				//Add Knockback Here:
 				weapon1.setAttack(0);
 			}
 			if(bow1.collide(player2) == true && player2.getHealth() > 0 && bow1.getAttack() == 1) {
-				fill(255,0,0);
-				rect(900,100,100,100);
 				player2.setHealth(player2.getHealth() - bow1.getDamage());
 				//Return to bow position:
 				bow1.setAttack(0);
@@ -509,8 +485,6 @@ public class GraphicsMain extends PApplet {
 				
 			}
 			if(bow2.collide(player1) == true && player1.getHealth() > 0 && bow2.getAttack() == 1) {
-				fill(255,0,0);
-				rect(900,100,100,100);
 				player1.setHealth(player1.getHealth() - bow2.getDamage());
 				bow2.setAttack(0);
 				//Return to bow position:
@@ -532,10 +506,10 @@ public class GraphicsMain extends PApplet {
 			cooldownTimer2 = 0;
 		}
 		if(cooldownTimer1 > 0) {
-			cooldownTimer1 -= (double)1/(60*weapon1.getCooldown());
+			cooldownTimer1 -= (double)1/(26*weapon1.getCooldown());
 		}
 		if(cooldownTimer2 > 0) {
-			cooldownTimer2 -= (double)1/(60*weapon2.getCooldown());
+			cooldownTimer2 -= (double)1/(26*weapon2.getCooldown());
 		}
 		if(bowCooldownTimer1 < 0) {
 			bowCooldownTimer1 = 0;
@@ -544,10 +518,10 @@ public class GraphicsMain extends PApplet {
 			bowCooldownTimer2 = 0;
 		}
 		if(bowCooldownTimer1 > 0) {
-			bowCooldownTimer1 -= (double)1/(60*bow1.getCooldown());
+			bowCooldownTimer1 -= (double)1/(26*bow1.getCooldown());
 		}
 		if(bowCooldownTimer2 > 0) {
-			bowCooldownTimer2 -= (double)1/(60*bow2.getCooldown());
+			bowCooldownTimer2 -= (double)1/(26*bow2.getCooldown());
 		}
 		if(weapon1.getAttack() == 0 && cooldownTimer1 == 0) {
 			weapon1.setAttack(-1);
@@ -657,12 +631,10 @@ public class GraphicsMain extends PApplet {
 		}
 	}
 
-	public void drawFrontPage() {
-		// Add Buttons and Animation later
-	}
-
-	public void drawSelectionScreen() {
-		// Add Buttons and Animation later
+	public boolean hmm() {
+		if()
 	}
 
 }
+
+
