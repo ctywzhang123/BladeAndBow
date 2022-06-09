@@ -19,8 +19,8 @@ public class GraphicsMain extends PApplet {
 	static int count = 0;
 
 	// Controls:
-	// F or J = Blade Attack
-	// C or M = Bow Attack
+	// C or M = Blade Attack
+	// F or J = Bow Attack
 
 	// Platform Bar Y-coordinate:
 	private int bottomBar = 160;
