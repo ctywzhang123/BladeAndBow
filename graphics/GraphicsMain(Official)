@@ -207,10 +207,10 @@ public class GraphicsMain extends PApplet {
 	}
 
 	public void draw() {
-//		if(hmm()) {
-//			displaySharick();
-//			image(img, 0, 0);
-//		}
+		if(hmm()) {
+			displaySharick();
+			image(img, 0, 0);
+		}
 		if (notMenu == false && inSelection == false) {
 			image(img, 0, 0);
 		}
