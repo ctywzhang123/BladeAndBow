@@ -16,7 +16,7 @@ public class GraphicsMain extends PApplet {
 	Audio zinnia;
 	Audio choose;
 	Audio menu_theme;
-	
+	Audio sharick_funny;
 	//GIF Stuff:
 //	int optcounter = 1;
 	PImage[] images;
@@ -145,7 +145,7 @@ public class GraphicsMain extends PApplet {
 	private boolean inCombat = false;
 	private boolean inSelection = false;
 	private boolean notMenu = false;
-
+	private boolean sharick = false;
 	public static void main(String[] args) {
 		PApplet.main("GraphicsMain");
 	}
@@ -179,10 +179,11 @@ public class GraphicsMain extends PApplet {
 			images_sharick[i] = loadImage(filename);
 			images_sharick[i].resize(width, height);
 			
-			zinnia = new Audio("zinnia.wav");
-			choose = new Audio("choose.wav");
-			menu_theme = new Audio("menu_theme.wav");
 		}
+		zinnia = new Audio("zinnia.wav");
+		choose = new Audio("choose.wav");
+		menu_theme = new Audio("menu_theme.wav");
+		sharick_funny = new Audio("sharick_funny.wav");
 		
 		//Image Loading for Selection Screen:
 		daggerBladeImage = loadImage("DaggerBladeLeft.png");
@@ -220,14 +221,15 @@ public class GraphicsMain extends PApplet {
 	public void draw() {
 		if(hmm()) {
 			displaySharick();
+			sharick_funny.playAudio();
 			image(img, 0, 0);
 		}
-		if (notMenu == false && inSelection == false) {
+		if (notMenu == false && inSelection == false && sharick == false) {
 			image(img, 0, 0);
 			menu_theme.playAudio();
 		}
 		
-		if (notMenu == true && inSelection == false) {
+		if (notMenu == true && inSelection == false && sharick == false) {
 			image(img, 0, 0);
 			menu_theme.stopAudio();
 		}
@@ -436,8 +438,10 @@ public class GraphicsMain extends PApplet {
 	
 
 	public void mouseClicked() {
-	if (notMenu && inSelection == false)
+	if (sharick && inSelection == false)
 	{
+		sharick = false;
+		sharick_funny.stopAudio();
 		notMenu = false;
 		img = menu;
 	}
@@ -465,9 +469,9 @@ public class GraphicsMain extends PApplet {
 	  }
 
 	public void displaySharick() {
-		if (frame_sharick > 149*3)
+		if (frame_sharick > 149)
 			frame_sharick = 0;
-		img = images_sharick[frame_sharick/3];
+		img = images_sharick[frame_sharick];
 		frame_sharick++;
 	}
 	/**
@@ -727,6 +731,8 @@ public class GraphicsMain extends PApplet {
 
 	public boolean hmm() {
 		if(hmm.toString().equals(new String("sharick"))) {
+			sharick = true;
+			menu_theme.stopAudio();
 			return true;
 		}
 		else
