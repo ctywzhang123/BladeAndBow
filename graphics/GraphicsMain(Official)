@@ -9,14 +9,14 @@ import processing.core.PApplet;
 public class GraphicsMain extends PApplet {
 	
 	//Something Unexpected???
-	StringBuilder hmm = new StringBuilder();
+	StringBuilder hmm = new StringBuilder(); 
 	
-	
-	//Audio
+	//Audio:
 	Audio zinnia;
 	Audio choose;
 	Audio menu_theme;
 	Audio sharick_funny;
+	
 	//GIF Stuff:
 //	int optcounter = 1;
 	PImage[] images;
@@ -40,6 +40,8 @@ public class GraphicsMain extends PApplet {
 	static double cooldownTimer2;
 	static double bowCooldownTimer1;
 	static double bowCooldownTimer2;
+	static int shieldCooldown1 = 200;
+	static int shieldCooldown2 = 200;
 	
 	//Arrow Directions:
 	int arrowDirection1 = 1;
@@ -49,7 +51,7 @@ public class GraphicsMain extends PApplet {
 	PImage img;
 	PImage option;
 	PImage menu;
-	File char1 = new File("PlayerSprite1.png");
+	File char1 = new File("PlayerSprite1.PNG");
 	File char2 = new File("PlayerSprite2.png");
 	File swordBlade = new File("SwordBlade.PNG");
 	
@@ -66,6 +68,10 @@ public class GraphicsMain extends PApplet {
 	PImage daggerBladeImage = new PImage();	
 	PImage strongBladeImage = new PImage();
 	PImage stoneBladeImage = new PImage();
+	PImage player1Hit = new PImage();
+	PImage player2Hit = new PImage();
+	PImage player1Shield = new PImage();
+	PImage player2Shield = new PImage();
 	ArrayList<PImage> weaponImages = new ArrayList<PImage>(3);
 	
 	PImage combatBackground = new PImage();
@@ -131,6 +137,12 @@ public class GraphicsMain extends PApplet {
 	private boolean up2 = false;
 	private boolean right2 = false;
 	
+	//Player Stats for End Screen:
+	private int player1SuccessfulBladeHits = 0;
+	private int player2SuccessfulBladeHits = 0;
+	private int player1SuccessfulBowHits = 0;
+	private int player2SuccessfulBowHits = 0;
+	
 	//For Selection Screen:
 	private int player1BladeChoice = 0;
 	private int player2BladeChoice = 0;
@@ -145,7 +157,8 @@ public class GraphicsMain extends PApplet {
 	private boolean inCombat = false;
 	private boolean inSelection = false;
 	private boolean notMenu = false;
-	private boolean sharick = false;
+	private boolean gameOver = false;
+
 	public static void main(String[] args) {
 		PApplet.main("GraphicsMain");
 	}
@@ -154,7 +167,7 @@ public class GraphicsMain extends PApplet {
 		size(1300, 750);
 	}
 
-	public void setup() {
+	public void setup() {		
 		//For Options:
 		images = new PImage[imageCount];
 		for(int i = 1; i <= imageCount; i++) {
@@ -179,11 +192,11 @@ public class GraphicsMain extends PApplet {
 			images_sharick[i] = loadImage(filename);
 			images_sharick[i].resize(width, height);
 			
+			zinnia = new Audio("zinnia.wav");
+			choose = new Audio("choose.wav");
+			menu_theme = new Audio("menu_theme.wav");
+			sharick_funny = new Audio("sharick_funny.wav");
 		}
-		zinnia = new Audio("zinnia.wav");
-		choose = new Audio("choose.wav");
-		menu_theme = new Audio("menu_theme.wav");
-		sharick_funny = new Audio("sharick_funny.wav");
 		
 		//Image Loading for Selection Screen:
 		daggerBladeImage = loadImage("DaggerBladeLeft.png");
@@ -192,6 +205,15 @@ public class GraphicsMain extends PApplet {
 		strongBladeImage.resize(75, 75);
 		stoneBladeImage = loadImage("StoneBladeLeft.png");
 		stoneBladeImage.resize(75, 75);
+		player1Hit = loadImage("BlueCollision.png");
+		player1Hit.resize(50, 50);
+		player2Hit = loadImage("RedCollision.png");
+		player2Hit.resize(50, 50);
+		player1Shield = loadImage("ForceField.png");
+		player1Shield.resize(140, 140);
+		player2Shield = loadImage("ForceField.png");
+		player2Shield.resize(140, 140);
+		
 		ArrayList<PImage> tempImages = new ArrayList<PImage>(3);
 		tempImages.add(daggerBladeImage);
 		tempImages.add(strongBladeImage);
@@ -224,16 +246,20 @@ public class GraphicsMain extends PApplet {
 			sharick_funny.playAudio();
 			image(img, 0, 0);
 		}
-		if (notMenu == false && inSelection == false && sharick == false) {
+		if (notMenu == false && inSelection == false && gameOver != true) {
 			image(img, 0, 0);
 			menu_theme.playAudio();
 		}
 		
-		if (notMenu == true && inSelection == false && sharick == false) {
+		if (notMenu == true && inSelection == false && gameOver != true) {
 			image(img, 0, 0);
 			menu_theme.stopAudio();
 		}
 		if(inCombat) {
+			if(frameCount % 200 == 0) {
+				player1.addHealth();
+				player2.addHealth();
+			}	
 			if (inSelection) {
 				menu_theme.stopAudio();
 				choose.playAudio();
@@ -276,6 +302,10 @@ public class GraphicsMain extends PApplet {
 			imageMode(CENTER);			
 			dBow1.draw(this);
 			dBow2.draw(this);
+			if(player1.getShielded())
+				image(player1Shield, player1.getX() + player1.getWidth()/4, player1.getY() - player1.getHeight()/4);
+			if(player2.getShielded())
+				image(player2Shield, player2.getX() + player2.getWidth()/4, player2.getY() - player1.getHeight()/4);
 //		    drawPlayerHitboxes();
 //			drawWeaponHitboxes();
 			drawCombatBar();
@@ -355,7 +385,7 @@ public class GraphicsMain extends PApplet {
 			}
 		}
 		if (inCombat) { // Checks if in combat
-          if (key == 'w' || key == 'a' || key == 'c' || key == 'd' || key == 'f' || key == 'j' || key == 'm') {
+          if (key == 'w' || key == 'a' || key == 'c' || key == 'd' || key == 'f' || key == 'j' || key == 'm' || key == 'g' || key == 'h') {
               // Move Player 1 based on direction
               if (key == 'w' || key == 'W') {
                   up1 = true;
@@ -369,7 +399,22 @@ public class GraphicsMain extends PApplet {
               } else if (key == 'd') {
                   right1 = true;
                   player1.setFacingLeft(false);
-              } else if (key == 'f') {
+              } 
+              else if(key == 'g') {
+            	  System.out.println(shieldCooldown1);
+            	  if(shieldCooldown1 > 0)
+            		  player1.setShielded(true);
+            	  else
+            		  player1.setShielded(false);
+              }
+              else if(key == 'h') {
+            	  System.out.println(shieldCooldown2);
+            	  if(shieldCooldown2 > 0)
+            		  player2.setShielded(true);
+            	  else
+            		  player2.setShielded(false);
+              }              
+              else if (key == 'f') {
                   if (player1.isFacingLeft()) {
                       arrowDirection1 = -1;
                   } else {
@@ -417,8 +462,11 @@ public class GraphicsMain extends PApplet {
 		hmm.append(key);
 		if (key != CODED){
 			// Player 1 Smooth Movement
-			if (key == 'w') {
-				// Nothing
+			if(key == 'g') { //Shields
+				player1.setShielded(false);
+			}
+			else if(key == 'h') {
+				player2.setShielded(false);
 			}
 			else if (key == 'a')
 				left1 = false;
@@ -438,14 +486,12 @@ public class GraphicsMain extends PApplet {
 	
 
 	public void mouseClicked() {
-	if (sharick && inSelection == false)
+	if (notMenu && inSelection == false && inCombat == false)
 	{
-		sharick = false;
-		sharick_funny.stopAudio();
 		notMenu = false;
 		img = menu;
 	}
-	if (notMenu == false && inSelection == false)
+	if (notMenu == false && inSelection == false && inCombat == false)
 		if (mouseX >= 480 && mouseX <= 830 && mouseY >= 280 && mouseY <= 390) {
 			notMenu = true;
 			inCombat = true;
@@ -469,9 +515,9 @@ public class GraphicsMain extends PApplet {
 	  }
 
 	public void displaySharick() {
-		if (frame_sharick > 149)
+		if (frame_sharick > 149*3)
 			frame_sharick = 0;
-		img = images_sharick[frame_sharick];
+		img = images_sharick[frame_sharick/3];
 		frame_sharick++;
 	}
 	/**
@@ -564,16 +610,22 @@ public class GraphicsMain extends PApplet {
 			// "if hit" logic (for left player)
 			if (weapon2.collide(player1) == true && player1.getHealth() > 0 && weapon2.getAttack() == 1) {
 				player1.setHealth(player1.getHealth() - weapon2.getDamage());
+				image(player2Hit, weapon2.getX(), weapon2.getY());
+				player2SuccessfulBladeHits++;
 				//Add Knockback Here:
 				weapon2.setAttack(0);
 			}
 			if (weapon1.collide(player2) == true && player2.getHealth() > 0 && weapon1.getAttack() == 1) {
 				player2.setHealth(player2.getHealth() - weapon1.getDamage());
+				image(player1Hit, weapon1.getX(), weapon1.getY());
+				player1SuccessfulBladeHits++;
 				//Add Knockback Here:
 				weapon1.setAttack(0);
 			}
 			if(bow1.collide(player2) == true && player2.getHealth() > 0 && bow1.getAttack() == 1) {
 				player2.setHealth(player2.getHealth() - bow1.getDamage());
+				player1SuccessfulBowHits++;
+				image(player1Hit, bow1.getX(), bow1.getY());
 				//Return to bow position:
 				bow1.setAttack(0);
 				bow1.setX(weapon1.getX());
@@ -582,6 +634,8 @@ public class GraphicsMain extends PApplet {
 			}
 			if(bow2.collide(player1) == true && player1.getHealth() > 0 && bow2.getAttack() == 1) {
 				player1.setHealth(player1.getHealth() - bow2.getDamage());
+				player2SuccessfulBowHits++;
+				image(player2Hit, bow2.getX(), bow2.getY());
 				bow2.setAttack(0);
 				//Return to bow position:
 				bow2.setX(weapon2.getX());
@@ -595,6 +649,32 @@ public class GraphicsMain extends PApplet {
 	 * Checks Cooldowns for Both Players
 	 */
 	public void checkCooldowns() {
+		if(shieldCooldown1 > 0) {
+			if(player1.getShielded() == true)
+				shieldCooldown1--;
+		}
+		if(shieldCooldown2 > 0) {
+			if(player2.getShielded() == true)
+				shieldCooldown2--;
+		}
+		if(shieldCooldown1 < 0) {
+			shieldCooldown1++;
+		}
+		if(shieldCooldown2 < 0) {
+			shieldCooldown2++;
+		}
+		if(shieldCooldown1 == 0) {
+			shieldCooldown1 = -400;
+		}
+		if(shieldCooldown2 == 0) {
+			shieldCooldown2 = -400;
+		}
+		if(shieldCooldown1 == -200) {
+			shieldCooldown1 = 200;
+		}
+		if(shieldCooldown2 == -200) {
+			shieldCooldown2 = 200;
+		}
 		if(cooldownTimer1 < 0) {
 			cooldownTimer1 = 0;
 		}
@@ -711,28 +791,40 @@ public class GraphicsMain extends PApplet {
 	
 	public void gameOver() {
 		if(player1.getHealth() <= 0 || player2.getHealth() <= 0) {
+			zinnia.stopAudio();
 			inCombat = false;
+			gameOver = true;
+			combatBackground.resize(width, height);
+			imageMode(CORNER);
+			image(combatBackground,0,0);
+			fill(0,0,0);
+			rectMode(CENTER);
+			rect(width/4,height/2, 500, 600);
+			rect(3*width/4,height/2, 500, 600);
+			fill(255,255,255);
+			textSize(40);
+			text("Player 1: ", width/4 - 120, height/4);
+			text("Player 2: ", 3*width/4 - 120, height/4);
+			//Stats:
+			text("Blade Hits: " + player1SuccessfulBladeHits, width/4 - 120, height/4 + 100);
+			text("Blade Hits: " + player2SuccessfulBladeHits, 3*width/4 - 120, height/4 + 100);
+			text("Bow Hits: " + player1SuccessfulBowHits, width/4 - 120, height/4 + 150);
+			text("Bow Hits: " + player2SuccessfulBowHits, 3*width/4 - 120, height/4 + 150);
 			if(player1.getHealth() <= 0) {
-				background(100,0,0);
-				fill(255,255,255);
-				zinnia.stopAudio();
-				textSize(100);
-				text("Player 2 Wins", 300, 200);
+				fill(0,255,0);
+				textSize(40);
+				text("WINNER", 3*width/4 + 60, height/4);
 			}
 			else if(player2.getHealth() <= 0) {
-				background(0,100,0);
-				fill(255,255,255);
-				zinnia.stopAudio();
-				textSize(100);
-				text("Player 1 Wins", 300, 200);
+				fill(0,255,0);
+				textSize(40);
+				text("WINNER", width/4 + 60, height/4);
 			}
 		}
 	}
 
 	public boolean hmm() {
 		if(hmm.toString().equals(new String("sharick"))) {
-			sharick = true;
-			menu_theme.stopAudio();
 			return true;
 		}
 		else
@@ -740,3 +832,5 @@ public class GraphicsMain extends PApplet {
 	}
 
 }
+
+
