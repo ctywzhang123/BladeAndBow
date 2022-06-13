@@ -7,6 +7,8 @@ public class Character extends GameObject implements Jumpable{
 	private static int gravity = 1;
 	private int xVelocity;
 	private int yVelocity;
+	private boolean shielded = false;
+	private final int shieldCooldown = 100;
 	
 	//Player Health:
 	private int health;
@@ -21,7 +23,18 @@ public class Character extends GameObject implements Jumpable{
 	}
 	
 	//Methods:
+	public boolean getShielded() {
+		return shielded;
+	}
 	
+	public void setShielded(boolean shielded) {
+		this.shielded = shielded;
+	}
+	
+	public int getShieldCooldown() {
+		return shieldCooldown;
+	}
+
 	public int getXVelocity() {
 		return xVelocity;
 	}
@@ -44,6 +57,11 @@ public class Character extends GameObject implements Jumpable{
 	
 	public int getHealth() {
 		return health;
+	}
+	
+	public void addHealth() {
+		if(health < originalHealth)
+			health += 1;
 	}
 
 	public void setHealth(int health) {
