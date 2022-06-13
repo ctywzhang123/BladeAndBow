@@ -25,7 +25,11 @@ public class GraphicsMain extends PApplet {
 	Audio announcer_player2;
 	Audio announcer_ready1;
 	Audio announcer_ready2;
-	Audio wins;
+	Audio wins1;
+	Audio wins2;
+	
+	//Zinnia Stop Audio:
+	private int zinnia_stopped = 0;
 	
 	//GIF Stuff:
 	PImage[] images;
@@ -196,7 +200,9 @@ public class GraphicsMain extends PApplet {
 		announcer_player2 = new Audio("vc_narration_player_02.wav");
 		announcer_ready1 = new Audio("vc_narration_ready.wav");
 		announcer_ready2 = new Audio("vc_narration_ready.wav");
-		wins = new Audio("vc_narration_result_win_allbattle.wav");
+		wins1 = new Audio("vc_narration_result_win_allbattle.wav");
+		wins2 = new Audio("vc_narration_result_win_allbattle.wav");
+
 		
 		//For Options:
 		images = new PImage[imageCount];
@@ -284,7 +290,7 @@ public class GraphicsMain extends PApplet {
 		if(inSelection) {
 			if(selectionTurn == 1) {
 				if(p1Delay == false) {
-					p1ReadyFrameCount = frameCount + 40;
+					p1ReadyFrameCount = frameCount + 50;
 					p1Delay = true;
 				}
 				if(frameCount == p1ReadyFrameCount)
@@ -292,23 +298,23 @@ public class GraphicsMain extends PApplet {
 			}
 			if(selectionTurn == 2) {
 				if(p2Delay == false) {
-					p2ReadyFrameCount = frameCount + 40;
+					p2ReadyFrameCount = frameCount + 50;
 					p2Delay = true;
 				}
 				if(frameCount == p2ReadyFrameCount)
 					announcer_ready2.playAudio();
 			}
 		}
+		if (inSelection) {
+			menu_theme.stopAudio();
+			choose.playAudio();
+		}
 		if(inCombat) {
 			if(frameCount % 200 == 0) {
 				player1.addHealth();
 				player2.addHealth();
 			}	
-			if (inSelection) {
-				menu_theme.stopAudio();
-				choose.playAudio();
-			}
-			if (!inSelection) {
+			if (!inSelection && !gameOver) {
 				choose.stopAudio();
 				zinnia.playAudio();
 			}
@@ -428,6 +434,10 @@ public class GraphicsMain extends PApplet {
 					dWeapon2 = new DrawableWeapon(weapon2, this);
 					inCombat = true;
 					inSelection = false;
+					announcer_player2 = new Audio("vc_narration_player_02.wav");
+					announcer_player1 = new Audio("vc_narration_player_01.wav");
+					p1Delay = false;
+					p2Delay = false;
 				}
 				selectionTurn++;
 			}
@@ -586,7 +596,6 @@ public class GraphicsMain extends PApplet {
 	if (notMenu == false && inSelection == false && inCombat == false)
 		if (mouseX >= 480 && mouseX <= 830 && mouseY >= 280 && mouseY <= 390) {
 			notMenu = true;
-			inCombat = true;
 			inSelection = true;
 		}
 		if (mouseX >= 355 && mouseX <= 960 && mouseY >= 415 && mouseY <= 525) {
@@ -877,9 +886,11 @@ public class GraphicsMain extends PApplet {
 	
 	
 	public void gameOver() {
-		if(player1.getHealth() <= 0 || player2.getHealth() <= 0) {
+		if(zinnia_stopped == 0) {
 			zinnia.stopAudio();
-			inCombat = false;
+			zinnia_stopped++;
+		}
+		if(player1.getHealth() <= 0 || player2.getHealth() <= 0) {
 			gameOver = true;
 			combatBackground.resize(width, height);
 			imageMode(CORNER);
@@ -897,12 +908,30 @@ public class GraphicsMain extends PApplet {
 			text("Blade Hits: " + player2SuccessfulBladeHits, 3*width/4 - 120, height/4 + 100);
 			text("Bow Hits: " + player1SuccessfulBowHits, width/4 - 120, height/4 + 150);
 			text("Bow Hits: " + player2SuccessfulBowHits, 3*width/4 - 120, height/4 + 150);
+			
+			//GameOver Audio
 			if(player1.getHealth() <= 0) {
+				announcer_player2.playAudio();
+				if(p2Delay == false) {
+					p2ReadyFrameCount = frameCount + 40;
+					p2Delay = true;
+				}
+				if(frameCount == p2ReadyFrameCount) {
+					wins2.playAudio();
+				}
 				fill(0,255,0);
 				textSize(40);
 				text("WINNER", 3*width/4 + 60, height/4);
 			}
 			else if(player2.getHealth() <= 0) {
+				announcer_player1.playAudio();
+				if(p1Delay == false) {
+					p1ReadyFrameCount = frameCount + 40;
+					p1Delay = true;
+				}
+				if(frameCount == p1ReadyFrameCount) {
+					wins1.playAudio();
+				}
 				fill(0,255,0);
 				textSize(40);
 				text("WINNER", width/4 + 60, height/4);
@@ -919,4 +948,5 @@ public class GraphicsMain extends PApplet {
 	}
 
 }
+
 
